@@ -33,6 +33,12 @@ namespace TiltBrush
         const string PLAYER_PREFS_POINTER_ANGLE = "Pointer_Angle2";
 
         // ---- Public types
+        private Indicator m_StrokeIndicator;
+        protected class Indicator
+        {
+            public StrokeIndicator m_Indicator;
+            public TrTransform m_StraightEdgeXf_CS;
+        }
 
         public enum SymmetryMode
         {
@@ -83,6 +89,7 @@ namespace TiltBrush
 
         // ---- Private inspector data
 
+        [SerializeField] private GameObject m_IndicatorPrefab;
         [SerializeField] private int m_MaxPointers = 1;
         [SerializeField] private GameObject m_MainPointerPrefab;
         [SerializeField] private GameObject m_AuxPointerPrefab;
@@ -277,6 +284,11 @@ namespace TiltBrush
         }
 
         // ---- accessors
+        
+        public StrokeIndicator GetIndicator()
+        {
+            return m_StrokeIndicator.m_Indicator;
+        }
 
         public PointerScript GetPointer(ControllerName name)
         {
@@ -360,6 +372,13 @@ namespace TiltBrush
 
             Debug.Assert(m_MaxPointers > 0);
             m_Pointers = new PointerData[m_MaxPointers];
+
+            // create new object for StrokIndicator
+            var indicator = new Indicator();
+            GameObject i_obj = (GameObject)Instantiate(m_IndicatorPrefab);
+            i_obj.transform.parent = transform;
+            indicator.m_Indicator = i_obj.GetComponent<StrokeIndicator>();
+            m_StrokeIndicator = indicator;
 
             for (int i = 0; i < m_Pointers.Length; ++i)
             {

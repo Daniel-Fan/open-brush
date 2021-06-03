@@ -23,6 +23,7 @@ namespace TiltBrush
         private static HashSet<System.Guid> sm_BrushGuidWarnings = new HashSet<System.Guid>();
 
         protected Stroke m_stroke;
+        private StrokeIndicator m_strokeIndicator;
         private PointerScript m_pointer;
         private int m_nextControlPoint;
         private bool m_isDone = true;
@@ -30,7 +31,8 @@ namespace TiltBrush
         // Using "Init" here so usage can avoid per-stroke heap activity.
         public void BaseInit(Stroke stroke,
                              PointerScript pointer,
-                             CanvasScript canvas)
+                             CanvasScript canvas,
+                             StrokeIndicator indicator)
         {
             if (stroke.m_Type != Stroke.Type.NotCreated)
             {
@@ -39,15 +41,17 @@ namespace TiltBrush
             }
             m_pointer = pointer;
             m_stroke = stroke;
+            m_strokeIndicator = indicator;
             m_nextControlPoint = 0;
             m_isDone = false;
 
             // We make the BeginLine call, even though the stroke time may be in the future.
             // Harmless with current brushes since no geometry is generated until UpdateLinePosition.
-            // We can move code to Update() if this changes.
+            // We can move code to Update() if this changes.            
 
             m_stroke.m_Object = m_pointer.BeginLineFromMemory(m_stroke, canvas);
             m_stroke.m_Type = Stroke.Type.BrushStroke;
+            // m_strokeIndicator = StrokeIndicator.Create(); // canvas.transform
 
             if (m_stroke.m_Object == null)
             {
@@ -83,6 +87,7 @@ namespace TiltBrush
 
             var rPointerScript = m_pointer;
             var rPointerObject = m_pointer.gameObject;
+            var rStrokeIndicator = m_strokeIndicator.gameObject;
 
             bool needMeshUpdate = false;
             bool needPointerUpdate = false;
@@ -126,6 +131,11 @@ namespace TiltBrush
             }
             if (needPointerUpdate)
             {
+                // This is only really done for visual reasons
+                var xf_GS_indicator = Coords.CanvasPose * TrTransform.TR(lastCp.m_Pos, lastCp.m_Orient);
+                xf_GS_indicator.scale = rStrokeIndicator.transform.GetUniformScale();
+                Coords.AsGlobal[rStrokeIndicator.transform] = xf_GS_indicator;
+
                 // This is only really done for visual reasons
                 var xf_GS = Coords.CanvasPose * TrTransform.TR(lastCp.m_Pos, lastCp.m_Orient);
                 xf_GS.scale = rPointerObject.transform.GetUniformScale();

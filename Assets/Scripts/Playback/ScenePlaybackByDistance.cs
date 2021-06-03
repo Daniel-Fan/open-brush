@@ -29,9 +29,9 @@ namespace TiltBrush
             m_parent = parent;
         }
 
-        public void Init(Stroke stroke, PointerScript pointer, CanvasScript canvas)
+        public void Init(Stroke stroke, PointerScript pointer, CanvasScript canvas, StrokeIndicator indicator)
         {
-            BaseInit(stroke, pointer, canvas);
+            BaseInit(stroke, pointer, canvas, indicator);
             m_lastPosition = m_stroke.m_ControlPoints[0].m_Pos;
 
             var desc = BrushCatalog.m_Instance.GetBrush(stroke.m_BrushGuid);
@@ -138,7 +138,9 @@ namespace TiltBrush
             {
                 m_MemoryObjectsDrawn++;
                 var pointer = PointerManager.m_Instance.GetPointer(InputManager.ControllerName.Brush);
-                playback.Init(stroke, pointer, targetCanvas);
+                var indicator = PointerManager.m_Instance.GetIndicator();
+
+                playback.Init(stroke, pointer, targetCanvas, indicator);
                 while (!playback.IsDone())
                 {
                     playback.Update(); // mutates m_metersRemaining and m_OutOfMeters

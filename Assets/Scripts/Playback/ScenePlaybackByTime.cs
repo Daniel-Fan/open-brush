@@ -28,10 +28,10 @@ namespace TiltBrush
         }
 
         public void Init(LinkedListNode<Stroke> memoryObjectNode,
-                         PointerScript pointer, CanvasScript canvas)
+                         PointerScript pointer, CanvasScript canvas, StrokeIndicator indicator)
         {
             m_strokeNode = memoryObjectNode;
-            BaseInit(memoryObjectNode.Value, pointer, canvas);
+            BaseInit(memoryObjectNode.Value, pointer, canvas, indicator);
         }
 
         public override void ClearPlayback()
@@ -154,7 +154,7 @@ namespace TiltBrush
                         var node = m_unrenderedStrokes.PopFirst();
                         if (node.Value.IsVisibleForPlayback)
                         {
-                            stroke.Init(node, PointerManager.m_Instance.GetTransientPointer(i), m_targetCanvas);
+                            stroke.Init(node, PointerManager.m_Instance.GetTransientPointer(i), m_targetCanvas, PointerManager.m_Instance.GetIndicator());
                             stroke.Update();
                             if (stroke.IsDone())
                             {
