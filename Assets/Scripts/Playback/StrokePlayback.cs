@@ -77,8 +77,9 @@ namespace TiltBrush
             if (!m_isDone)
             {
                 m_pointer.EndLineFromMemory(m_stroke);
-                m_strokeIndicator.ClearPlayback();
-                m_oculusAvatar.ClearPlayback();
+                //UnityEngine.Debug.Log("Starting Clear PlayBack Object");
+                //PlayBackObject.m_Instance.ClearPlayBack();
+                //UnityEngine.Debug.Log("Finish Clear PlayBack Object");
                 m_isDone = true;
             }
         }

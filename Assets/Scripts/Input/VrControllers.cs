@@ -151,6 +151,11 @@ namespace TiltBrush
                 comp.enabled = enabled;
             }
         }
+
+        public void ClearPlayback()
+        {
+            Destroy(gameObject);
+        }
     }
 
 } // namespace TiltBrush

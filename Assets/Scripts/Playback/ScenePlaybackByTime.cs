@@ -163,7 +163,7 @@ namespace TiltBrush
                             Debug.Log("Check the i value: " + i);
                             Debug.Log("get the transientpointer {0}", PointerManager.m_Instance.GetTransientPointer(i));
                             Debug.Log("Check the total length: " + m_strokePlaybacks.Length);
-                            stroke.Init(node, PointerManager.m_Instance.GetTransientPointer(i), m_targetCanvas, PointerManager.m_Instance.GetIndicator(), PointerManager.m_Instance.GetAvatar(), PointerManager.m_Instance.GetController());
+                            stroke.Init(node, PointerManager.m_Instance.GetTransientPointer(i), m_targetCanvas, PlayBackObject.m_Instance.GetIndicator(), PlayBackObject.m_Instance.GetAvatar(), PlayBackObject.m_Instance.GetController());
                             Debug.Log("update the strokes after it has been init");
                             stroke.Update();
                             if (stroke.IsDone())

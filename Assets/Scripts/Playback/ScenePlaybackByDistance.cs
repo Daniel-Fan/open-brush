@@ -138,9 +138,9 @@ namespace TiltBrush
             {
                 m_MemoryObjectsDrawn++;
                 var pointer = PointerManager.m_Instance.GetPointer(InputManager.ControllerName.Brush);
-                var indicator = PointerManager.m_Instance.GetIndicator();
-                var avatar = PointerManager.m_Instance.GetAvatar();
-                var controller = PointerManager.m_Instance.GetController();
+                var indicator = PlayBackObject.m_Instance.GetIndicator();
+                var avatar = PlayBackObject.m_Instance.GetAvatar();
+                var controller = PlayBackObject.m_Instance.GetController();
 
                 playback.Init(stroke, pointer, targetCanvas, indicator, avatar, controller);
                 while (!playback.IsDone())
