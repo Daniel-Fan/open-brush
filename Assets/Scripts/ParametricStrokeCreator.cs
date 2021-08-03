@@ -154,6 +154,8 @@ namespace TiltBrush
                 {
                     m_Pos = cpPose.translation,
                     m_Orient = cpPose.rotation,
+                    m_HeadPos = cpPose.translation,
+                    m_HeadOrient = cpPose.rotation,
                     m_Pressure = 1,
                     m_TimestampMs = (uint)(Mathf.Lerp((float)time0, (float)time1, t) * kSecondsToMs)
                 };
@@ -244,6 +246,8 @@ namespace TiltBrush
                 {
                     m_Pos = Vector3.Lerp(xf0.translation, xf1.translation, t),
                     m_Orient = Quaternion.Slerp(xf0.rotation, xf1.rotation, t),
+                    m_HeadPos = Vector3.Lerp(xf0.translation, xf1.translation, t),
+                    m_HeadOrient = Quaternion.Slerp(xf0.rotation, xf1.rotation, t),
                     m_Pressure = 1f,
                     m_TimestampMs = (uint)(Mathf.Lerp((float)t0, (float)t1, t) * kSecondsToMs)
                 };
@@ -324,6 +328,8 @@ namespace TiltBrush
                 {
                     m_Pos = m_initialTransform.translation,
                     m_Orient = m_initialTransform.rotation,
+                    m_HeadPos = m_initialTransform.translation,
+                    m_HeadOrient = m_initialTransform.rotation,
                     m_Pressure = 1f,
                     m_TimestampMs = (uint)(t0 * kSecondsToMs)
                 };
@@ -331,6 +337,8 @@ namespace TiltBrush
                 {
                     m_Pos = finalTransform.translation,
                     m_Orient = finalTransform.rotation,
+                    m_HeadPos = finalTransform.translation,
+                    m_HeadOrient = finalTransform.rotation,
                     m_Pressure = 1f,
                     m_TimestampMs = (uint)(t1 * kSecondsToMs)
                 };
@@ -384,6 +392,8 @@ namespace TiltBrush
                 {
                     m_Pos = xf.translation,
                     m_Orient = xf.rotation,
+                    m_HeadPos = xf.translation,
+                    m_HeadOrient = xf.rotation,
                     m_Pressure = 1f,
                     m_TimestampMs = (uint)(Mathf.Lerp((float)t0, (float)t1, t) * 1000)
                 };

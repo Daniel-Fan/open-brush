@@ -1141,6 +1141,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1711ff795b0eac4da4815318e17b3fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_VrControllerPrefab: {fileID: 7615493206362998395, guid: 85830ce4b1aeaef44ab2195e775848c3,
+    type: 3}
+  m_OculusAvatarPrefab: {fileID: 4740093186570995350, guid: 891403b95ebc765428c0723c37c9c904,
+    type: 3}
   m_IndicatorPrefab: {fileID: 8496306414830335062, guid: dcf17254dcd71d64d8829635cba3702e,
     type: 3}
   m_MaxPointers: 10
@@ -27146,7 +27150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SketchSurface: {fileID: 593121473}
-  m_DefaultSketchPlaybackMode: 0
+  m_DefaultSketchPlaybackMode: 1
   m_GazeMaxAngleFromPointing: 85
   m_GazeMaxAngleFacingToForward: 80
   m_AtlasIconTextures: 1

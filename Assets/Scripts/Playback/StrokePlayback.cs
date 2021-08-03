@@ -24,6 +24,8 @@ namespace TiltBrush
 
         protected Stroke m_stroke;
         private StrokeIndicator m_strokeIndicator;
+        private OculusAvatar m_oculusAvatar;
+        private VrControllers m_vrcontroller;
         private PointerScript m_pointer;
         private int m_nextControlPoint;
         private bool m_isDone = true;
@@ -32,8 +34,11 @@ namespace TiltBrush
         public void BaseInit(Stroke stroke,
                              PointerScript pointer,
                              CanvasScript canvas,
-                             StrokeIndicator indicator)
+                             StrokeIndicator indicator,
+                             OculusAvatar avatar,
+                             VrControllers controller)
         {
+            UnityEngine.Debug.Log("Check stroke m_type" + (stroke.m_Type != Stroke.Type.NotCreated));
             if (stroke.m_Type != Stroke.Type.NotCreated)
             {
                 UnityEngine.Debug.LogWarningFormat("Unexpected: playback stroke type {0}", stroke.m_Type);
@@ -42,14 +47,17 @@ namespace TiltBrush
             m_pointer = pointer;
             m_stroke = stroke;
             m_strokeIndicator = indicator;
+            m_oculusAvatar = avatar;
+            m_vrcontroller = controller;
             m_nextControlPoint = 0;
             m_isDone = false;
 
             // We make the BeginLine call, even though the stroke time may be in the future.
             // Harmless with current brushes since no geometry is generated until UpdateLinePosition.
             // We can move code to Update() if this changes.            
-
+            UnityEngine.Debug.Log("finish the variable assignment, starting to begin line from memory");
             m_stroke.m_Object = m_pointer.BeginLineFromMemory(m_stroke, canvas);
+            UnityEngine.Debug.Log("after begin line from memory");
             m_stroke.m_Type = Stroke.Type.BrushStroke;
             // m_strokeIndicator = StrokeIndicator.Create(); // canvas.transform
 
@@ -69,6 +77,8 @@ namespace TiltBrush
             if (!m_isDone)
             {
                 m_pointer.EndLineFromMemory(m_stroke);
+                m_strokeIndicator.ClearPlayback();
+                m_oculusAvatar.ClearPlayback();
                 m_isDone = true;
             }
         }
@@ -85,16 +95,24 @@ namespace TiltBrush
         {
             if (m_isDone) { return; }
 
+            UnityEngine.Debug.Log("Assign the basic variables");
             var rPointerScript = m_pointer;
             var rPointerObject = m_pointer.gameObject;
             var rStrokeIndicator = m_strokeIndicator.gameObject;
+            UnityEngine.Debug.Log("Assign the Avator variables");
+            var rOculusAvatar = m_oculusAvatar.gameObject;
+            UnityEngine.Debug.Log("Assign the controller variables");
+            // var rVrController = m_vrcontroller.gameObject;
 
             bool needMeshUpdate = false;
             bool needPointerUpdate = false;
             bool strokeFinished = false;
+            UnityEngine.Debug.Log("Before updating the control point");
             var lastCp = new PointerManager.ControlPoint();
+            var lastCphead = new PointerManager.ControlPoint();
             OverlayManager.m_Instance.UpdateProgress(SketchMemoryScript.m_Instance.GetDrawnPercent());
 
+            UnityEngine.Debug.Log("Inside strokePlayBack update()");
             RdpStrokeSimplifier simplifier = QualityControls.m_Instance.StrokeSimplifier;
             if (simplifier.Level > 0.0f)
             {
@@ -110,10 +128,14 @@ namespace TiltBrush
                     break;
                 }
                 var cp = m_stroke.m_ControlPoints[m_nextControlPoint];
+                lastCphead = cp;
                 if (!IsControlPointReady(cp))
                 {
                     break;
                 }
+                UnityEngine.Debug.Log("Inside strokePlayBack update while loop");
+                UnityEngine.Debug.LogFormat("Unexpected: playback pointerscript {0}", rPointerScript);
+                UnityEngine.Debug.LogFormat("Unexpected: playback stroke control point {0}", cp);
 
                 if (!m_stroke.m_ControlPointsToDrop[m_nextControlPoint])
                 {
@@ -129,12 +151,24 @@ namespace TiltBrush
             {
                 rPointerScript.UpdateLineVisuals();
             }
+
+            
+
             if (needPointerUpdate)
             {
                 // This is only really done for visual reasons
                 var xf_GS_indicator = Coords.CanvasPose * TrTransform.TR(lastCp.m_Pos, lastCp.m_Orient);
                 xf_GS_indicator.scale = rStrokeIndicator.transform.GetUniformScale();
                 Coords.AsGlobal[rStrokeIndicator.transform] = xf_GS_indicator;
+
+
+                var xf_GS_avatar = Coords.CanvasPose * TrTransform.TR(lastCphead.m_HeadPos, lastCphead.m_HeadOrient);
+                xf_GS_avatar.scale = rOculusAvatar.transform.GetUniformScale();
+                Coords.AsGlobal[rOculusAvatar.transform] = xf_GS_avatar;
+
+                //var xf_GS_controller = Coords.CanvasPose * TrTransform.TR(lastCp.m_Pos, lastCp.m_Orient);
+                //xf_GS_controller.scale = rVrController.transform.GetUniformScale();
+                //Coords.AsGlobal[rVrController.transform] = xf_GS_controller;
 
                 // This is only really done for visual reasons
                 var xf_GS = Coords.CanvasPose * TrTransform.TR(lastCp.m_Pos, lastCp.m_Orient);

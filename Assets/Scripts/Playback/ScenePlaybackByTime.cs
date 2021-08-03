@@ -28,10 +28,11 @@ namespace TiltBrush
         }
 
         public void Init(LinkedListNode<Stroke> memoryObjectNode,
-                         PointerScript pointer, CanvasScript canvas, StrokeIndicator indicator)
+                         PointerScript pointer, CanvasScript canvas, StrokeIndicator indicator, OculusAvatar avatar, VrControllers controller)
         {
             m_strokeNode = memoryObjectNode;
-            BaseInit(memoryObjectNode.Value, pointer, canvas, indicator);
+            Debug.Log("Before base init");
+            BaseInit(memoryObjectNode.Value, pointer, canvas, indicator, avatar, controller);
         }
 
         public override void ClearPlayback()
@@ -136,11 +137,14 @@ namespace TiltBrush
             int pendingStrokes = 0;
             if (currentTimeMs != 0)
             {
+                Debug.Log("PlayBack by Time Update() before for loop.");
                 for (int i = 0; i < m_strokePlaybacks.Length; ++i)
                 {
                     var stroke = m_strokePlaybacks[i];
                     // update any pending stroke from last frame
+                    Debug.Log("update any pending stroke from last frame");
                     stroke.Update();
+                    Debug.Log("Checking stroke is done: " + stroke.IsDone());
                     if (stroke.IsDone() && stroke.StrokeNode != null)
                     {
                         m_renderedStrokes.Insert(stroke.StrokeNode);
@@ -152,9 +156,15 @@ namespace TiltBrush
                         !m_unrenderedStrokes.First.Value.IsVisibleForPlayback))
                     {
                         var node = m_unrenderedStrokes.PopFirst();
+                        Debug.Log("Before checking the visibility of stroke: " + node.Value.IsVisibleForPlayback);
                         if (node.Value.IsVisibleForPlayback)
                         {
-                            stroke.Init(node, PointerManager.m_Instance.GetTransientPointer(i), m_targetCanvas, PointerManager.m_Instance.GetIndicator());
+                            Debug.Log("Before init the stroke");
+                            Debug.Log("Check the i value: " + i);
+                            Debug.Log("get the transientpointer {0}", PointerManager.m_Instance.GetTransientPointer(i));
+                            Debug.Log("Check the total length: " + m_strokePlaybacks.Length);
+                            stroke.Init(node, PointerManager.m_Instance.GetTransientPointer(i), m_targetCanvas, PointerManager.m_Instance.GetIndicator(), PointerManager.m_Instance.GetAvatar(), PointerManager.m_Instance.GetController());
+                            Debug.Log("update the strokes after it has been init");
                             stroke.Update();
                             if (stroke.IsDone())
                             {

@@ -45,6 +45,10 @@ namespace TiltBrush
         //{
             
         //}
+        public void ClearPlayback()
+        {
+            Destroy(gameObject);
+        }
     }
 
 }

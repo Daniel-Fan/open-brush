@@ -29,9 +29,9 @@ namespace TiltBrush
             m_parent = parent;
         }
 
-        public void Init(Stroke stroke, PointerScript pointer, CanvasScript canvas, StrokeIndicator indicator)
+        public void Init(Stroke stroke, PointerScript pointer, CanvasScript canvas, StrokeIndicator indicator, OculusAvatar avatar, VrControllers controller)
         {
-            BaseInit(stroke, pointer, canvas, indicator);
+            BaseInit(stroke, pointer, canvas, indicator, avatar, controller);
             m_lastPosition = m_stroke.m_ControlPoints[0].m_Pos;
 
             var desc = BrushCatalog.m_Instance.GetBrush(stroke.m_BrushGuid);
@@ -139,8 +139,10 @@ namespace TiltBrush
                 m_MemoryObjectsDrawn++;
                 var pointer = PointerManager.m_Instance.GetPointer(InputManager.ControllerName.Brush);
                 var indicator = PointerManager.m_Instance.GetIndicator();
+                var avatar = PointerManager.m_Instance.GetAvatar();
+                var controller = PointerManager.m_Instance.GetController();
 
-                playback.Init(stroke, pointer, targetCanvas, indicator);
+                playback.Init(stroke, pointer, targetCanvas, indicator, avatar, controller);
                 while (!playback.IsDone())
                 {
                     playback.Update(); // mutates m_metersRemaining and m_OutOfMeters

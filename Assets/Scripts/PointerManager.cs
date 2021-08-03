@@ -40,6 +40,21 @@ namespace TiltBrush
             public TrTransform m_StraightEdgeXf_CS;
         }
 
+        private Controller m_VrController;
+        protected class Controller
+        {
+            public VrControllers m_Controller;
+            public TrTransform m_StraightEdgeXf_CS;
+        }
+
+        private Avatar m_OculusAvatar;
+        protected class Avatar
+        {
+            public OculusAvatar m_Avatar;
+            public TrTransform m_StraightEdgeXf_CS;
+        }
+        //public OvrAvatar myAvatar;
+
         public enum SymmetryMode
         {
             None,
@@ -56,6 +71,10 @@ namespace TiltBrush
         {
             public Vector3 m_Pos;
             public Quaternion m_Orient;
+
+            // head position
+            public Vector3 m_HeadPos;
+            public Quaternion m_HeadOrient;
 
             public const uint EXTENSIONS = (uint)(
                 SketchWriter.ControlPointExtension.Pressure |
@@ -89,6 +108,8 @@ namespace TiltBrush
 
         // ---- Private inspector data
 
+        [SerializeField] private GameObject m_VrControllerPrefab;
+        [SerializeField] private GameObject m_OculusAvatarPrefab;
         [SerializeField] private GameObject m_IndicatorPrefab;
         [SerializeField] private int m_MaxPointers = 1;
         [SerializeField] private GameObject m_MainPointerPrefab;
@@ -290,6 +311,16 @@ namespace TiltBrush
             return m_StrokeIndicator.m_Indicator;
         }
 
+        public VrControllers GetController()
+        {
+            return m_VrController.m_Controller;
+        }
+
+        public OculusAvatar GetAvatar()
+        {
+            return m_OculusAvatar.m_Avatar;
+        }
+
         public PointerScript GetPointer(ControllerName name)
         {
             return GetPointerData(name).m_Script;
@@ -372,6 +403,20 @@ namespace TiltBrush
 
             Debug.Assert(m_MaxPointers > 0);
             m_Pointers = new PointerData[m_MaxPointers];
+
+            // create new object for OculusAvatar
+            var avatar = new Avatar();
+            GameObject a_obj = (GameObject)Instantiate(m_OculusAvatarPrefab);
+            a_obj.transform.parent = transform;
+            avatar.m_Avatar = a_obj.GetComponent<OculusAvatar>();
+            m_OculusAvatar = avatar;
+
+            // create new object for VrController
+            var controller = new Controller();
+            GameObject c_obj = (GameObject)Instantiate(m_VrControllerPrefab);
+            c_obj.transform.parent = transform;
+            controller.m_Controller = c_obj.GetComponent<VrControllers>();
+            m_VrController = controller;
 
             // create new object for StrokIndicator
             var indicator = new Indicator();
@@ -1049,10 +1094,11 @@ namespace TiltBrush
             {
                 var p = m_Pointers[i];
                 TrTransform xf_CS = canvas.AsCanvas[p.m_Script.transform];
+                TrTransform xf_HeadCS = canvas.AsCanvas[ViewpointScript.Head];
 
                 p.m_Script.CreateNewLine(canvas, xf_CS, null);
                 p.m_Script.SetPressure(STRAIGHTEDGE_PRESSURE);
-                p.m_Script.SetControlPoint(xf_CS, isKeeper: true);
+                p.m_Script.SetControlPoint(xf_CS, xf_HeadCS, isKeeper: true);
             }
 
             // Ensure that snap is disabled when we start the stroke.
@@ -1134,6 +1180,7 @@ namespace TiltBrush
             {
                 PointerScript script = m_Pointers[i].m_Script;
                 var xfPointer_CS = canvas.AsCanvas[script.transform];
+                var xf_HeadCS = canvas.AsCanvas[ViewpointScript.Head];
 
                 // Pass in parametric stroke creator.
                 ParametricStrokeCreator currentCreator = null;
@@ -1157,7 +1204,7 @@ namespace TiltBrush
                 script.CreateNewLine(
                     canvas, xfPointer_CS, currentCreator,
                     m_StraightEdgeProxyActive ? m_StraightEdgeProxyBrush : null);
-                script.SetControlPoint(xfPointer_CS, isKeeper: true);
+                script.SetControlPoint(xfPointer_CS, xf_HeadCS, isKeeper: true);
             }
         }
 
