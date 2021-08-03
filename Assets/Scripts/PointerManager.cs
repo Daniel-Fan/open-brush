@@ -33,26 +33,26 @@ namespace TiltBrush
         const string PLAYER_PREFS_POINTER_ANGLE = "Pointer_Angle2";
 
         // ---- Public types
-        private Indicator m_StrokeIndicator;
-        protected class Indicator
-        {
-            public StrokeIndicator m_Indicator;
-            public TrTransform m_StraightEdgeXf_CS;
-        }
+        //private Indicator m_StrokeIndicator;
+        //protected class Indicator
+        //{
+        //    public StrokeIndicator m_Indicator;
+        //    public TrTransform m_StraightEdgeXf_CS;
+        //}
 
-        private Controller m_VrController;
-        protected class Controller
-        {
-            public VrControllers m_Controller;
-            public TrTransform m_StraightEdgeXf_CS;
-        }
+        //private Controller m_VrController;
+        //protected class Controller
+        //{
+        //    public VrControllers m_Controller;
+        //    public TrTransform m_StraightEdgeXf_CS;
+        //}
 
-        private Avatar m_OculusAvatar;
-        protected class Avatar
-        {
-            public OculusAvatar m_Avatar;
-            public TrTransform m_StraightEdgeXf_CS;
-        }
+        //private Avatar m_OculusAvatar;
+        //protected class Avatar
+        //{
+        //    public OculusAvatar m_Avatar;
+        //    public TrTransform m_StraightEdgeXf_CS;
+        //}
         //public OvrAvatar myAvatar;
 
         public enum SymmetryMode
@@ -108,9 +108,9 @@ namespace TiltBrush
 
         // ---- Private inspector data
 
-        [SerializeField] private GameObject m_VrControllerPrefab;
-        [SerializeField] private GameObject m_OculusAvatarPrefab;
-        [SerializeField] private GameObject m_IndicatorPrefab;
+        //[SerializeField] private GameObject m_VrControllerPrefab;
+        //[SerializeField] private GameObject m_OculusAvatarPrefab;
+        //[SerializeField] private GameObject m_IndicatorPrefab;
         [SerializeField] private int m_MaxPointers = 1;
         [SerializeField] private GameObject m_MainPointerPrefab;
         [SerializeField] private GameObject m_AuxPointerPrefab;
@@ -306,20 +306,20 @@ namespace TiltBrush
 
         // ---- accessors
         
-        public StrokeIndicator GetIndicator()
-        {
-            return m_StrokeIndicator.m_Indicator;
-        }
+        //public StrokeIndicator GetIndicator()
+        //{
+        //    return m_StrokeIndicator.m_Indicator;
+        //}
 
-        public VrControllers GetController()
-        {
-            return m_VrController.m_Controller;
-        }
+        //public VrControllers GetController()
+        //{
+        //    return m_VrController.m_Controller;
+        //}
 
-        public OculusAvatar GetAvatar()
-        {
-            return m_OculusAvatar.m_Avatar;
-        }
+        //public OculusAvatar GetAvatar()
+        //{
+        //    return m_OculusAvatar.m_Avatar;
+        //}
 
         public PointerScript GetPointer(ControllerName name)
         {
@@ -404,26 +404,26 @@ namespace TiltBrush
             Debug.Assert(m_MaxPointers > 0);
             m_Pointers = new PointerData[m_MaxPointers];
 
-            // create new object for OculusAvatar
-            var avatar = new Avatar();
-            GameObject a_obj = (GameObject)Instantiate(m_OculusAvatarPrefab);
-            a_obj.transform.parent = transform;
-            avatar.m_Avatar = a_obj.GetComponent<OculusAvatar>();
-            m_OculusAvatar = avatar;
+            //// create new object for OculusAvatar
+            //var avatar = new Avatar();
+            //GameObject a_obj = (GameObject)Instantiate(m_OculusAvatarPrefab);
+            //a_obj.transform.parent = transform;
+            //avatar.m_Avatar = a_obj.GetComponent<OculusAvatar>();
+            //m_OculusAvatar = avatar;
 
-            // create new object for VrController
-            var controller = new Controller();
-            GameObject c_obj = (GameObject)Instantiate(m_VrControllerPrefab);
-            c_obj.transform.parent = transform;
-            controller.m_Controller = c_obj.GetComponent<VrControllers>();
-            m_VrController = controller;
+            //// create new object for VrController
+            //var controller = new Controller();
+            //GameObject c_obj = (GameObject)Instantiate(m_VrControllerPrefab);
+            //c_obj.transform.parent = transform;
+            //controller.m_Controller = c_obj.GetComponent<VrControllers>();
+            //m_VrController = controller;
 
-            // create new object for StrokIndicator
-            var indicator = new Indicator();
-            GameObject i_obj = (GameObject)Instantiate(m_IndicatorPrefab);
-            i_obj.transform.parent = transform;
-            indicator.m_Indicator = i_obj.GetComponent<StrokeIndicator>();
-            m_StrokeIndicator = indicator;
+            //// create new object for StrokIndicator
+            //var indicator = new Indicator();
+            //GameObject i_obj = (GameObject)Instantiate(m_IndicatorPrefab);
+            //i_obj.transform.parent = transform;
+            //indicator.m_Indicator = i_obj.GetComponent<StrokeIndicator>();
+            //m_StrokeIndicator = indicator;
 
             for (int i = 0; i < m_Pointers.Length; ++i)
             {

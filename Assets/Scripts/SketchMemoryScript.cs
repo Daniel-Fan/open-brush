@@ -650,6 +650,9 @@ namespace TiltBrush
                 App.Instance.CurrentSketchTime = float.MaxValue;
                 m_ScenePlayback.Update();
                 m_ScenePlayback = null;
+                Debug.Log("Starting Clear PlayBack Object");
+                PlayBackObject.m_Instance.ClearPlayBack();
+                Debug.Log("Finish Clear PlayBack Object");
             }
             SelectionManager.m_Instance.ForgetStrokesInSelectionCanvas();
             ClearRedo();
@@ -849,6 +852,9 @@ namespace TiltBrush
         {
             if (bDrawFromStart)
             {
+                Debug.Log("Starting Initialize PlayBack Object");
+                PlayBackObject.m_Instance.Initialized();
+                Debug.Log("Finished Initialize PlayBack Object");
                 switch (m_PlaybackMode)
                 {
                     case PlaybackMode.Distance:
@@ -888,6 +894,9 @@ namespace TiltBrush
                     PointerManager.m_Instance.SetInPlaybackMode(false);
                     PointerManager.m_Instance.RequestPointerRendering(true);
                     m_ScenePlayback = null;
+                    Debug.Log("Starting Clear PlayBack Object");
+                    PlayBackObject.m_Instance.ClearPlayBack();
+                    Debug.Log("Finish Clear PlayBack Object");
                 }
                 return false;
             }
@@ -920,6 +929,9 @@ namespace TiltBrush
                 m_ScenePlayback.QuickLoadRemaining();
                 m_ScenePlayback.Update();
                 m_ScenePlayback = null;
+                Debug.Log("Starting Clear PlayBack Object");
+                PlayBackObject.m_Instance.ClearPlayBack();
+                Debug.Log("Finish Clear PlayBack Object");
             }
             else
             { // timeline edit mode
