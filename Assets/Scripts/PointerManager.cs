@@ -75,6 +75,9 @@ namespace TiltBrush
             // head position
             public Vector3 m_HeadPos;
             public Quaternion m_HeadOrient;
+            // controller position
+            public Vector3 m_ControllerPos;
+            public Quaternion m_ControllerOrient;
 
             public const uint EXTENSIONS = (uint)(
                 SketchWriter.ControlPointExtension.Pressure |
@@ -1095,10 +1098,11 @@ namespace TiltBrush
                 var p = m_Pointers[i];
                 TrTransform xf_CS = canvas.AsCanvas[p.m_Script.transform];
                 TrTransform xf_HeadCS = canvas.AsCanvas[ViewpointScript.Head];
+                TrTransform xf_ControllerCS = canvas.AsCanvas[InputManager.Brush.Transform];
 
                 p.m_Script.CreateNewLine(canvas, xf_CS, null);
                 p.m_Script.SetPressure(STRAIGHTEDGE_PRESSURE);
-                p.m_Script.SetControlPoint(xf_CS, xf_HeadCS, isKeeper: true);
+                p.m_Script.SetControlPoint(xf_CS, xf_HeadCS, xf_ControllerCS, isKeeper: true);
             }
 
             // Ensure that snap is disabled when we start the stroke.
@@ -1180,7 +1184,8 @@ namespace TiltBrush
             {
                 PointerScript script = m_Pointers[i].m_Script;
                 var xfPointer_CS = canvas.AsCanvas[script.transform];
-                var xf_HeadCS = canvas.AsCanvas[ViewpointScript.Head];
+                var xfHead_CS = canvas.AsCanvas[ViewpointScript.Head];
+                var xfController_CS = canvas.AsCanvas[InputManager.Brush.Transform];
 
                 // Pass in parametric stroke creator.
                 ParametricStrokeCreator currentCreator = null;
@@ -1204,7 +1209,7 @@ namespace TiltBrush
                 script.CreateNewLine(
                     canvas, xfPointer_CS, currentCreator,
                     m_StraightEdgeProxyActive ? m_StraightEdgeProxyBrush : null);
-                script.SetControlPoint(xfPointer_CS, xf_HeadCS, isKeeper: true);
+                script.SetControlPoint(xfPointer_CS, xfHead_CS, xfController_CS, isKeeper: true);
             }
         }
 

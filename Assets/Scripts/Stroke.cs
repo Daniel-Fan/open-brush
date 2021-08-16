@@ -347,6 +347,8 @@ namespace TiltBrush
                 return;
             }
 
+            PlayBackObject.m_Instance.SetParent(canvas);
+
             switch (m_Type)
             {
                 case Type.BatchedBrushStroke:

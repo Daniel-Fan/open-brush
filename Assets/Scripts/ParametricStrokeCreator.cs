@@ -156,6 +156,8 @@ namespace TiltBrush
                     m_Orient = cpPose.rotation,
                     m_HeadPos = cpPose.translation,
                     m_HeadOrient = cpPose.rotation,
+                    m_ControllerPos = cpPose.translation,
+                    m_ControllerOrient = cpPose.rotation,
                     m_Pressure = 1,
                     m_TimestampMs = (uint)(Mathf.Lerp((float)time0, (float)time1, t) * kSecondsToMs)
                 };
@@ -248,6 +250,8 @@ namespace TiltBrush
                     m_Orient = Quaternion.Slerp(xf0.rotation, xf1.rotation, t),
                     m_HeadPos = Vector3.Lerp(xf0.translation, xf1.translation, t),
                     m_HeadOrient = Quaternion.Slerp(xf0.rotation, xf1.rotation, t),
+                    m_ControllerPos = Vector3.Lerp(xf0.translation, xf1.translation, t),
+                    m_ControllerOrient = Quaternion.Slerp(xf0.rotation, xf1.rotation, t),
                     m_Pressure = 1f,
                     m_TimestampMs = (uint)(Mathf.Lerp((float)t0, (float)t1, t) * kSecondsToMs)
                 };
@@ -330,6 +334,8 @@ namespace TiltBrush
                     m_Orient = m_initialTransform.rotation,
                     m_HeadPos = m_initialTransform.translation,
                     m_HeadOrient = m_initialTransform.rotation,
+                    m_ControllerPos = m_initialTransform.translation,
+                    m_ControllerOrient = m_initialTransform.rotation,
                     m_Pressure = 1f,
                     m_TimestampMs = (uint)(t0 * kSecondsToMs)
                 };
@@ -339,6 +345,8 @@ namespace TiltBrush
                     m_Orient = finalTransform.rotation,
                     m_HeadPos = finalTransform.translation,
                     m_HeadOrient = finalTransform.rotation,
+                    m_ControllerPos = finalTransform.translation,
+                    m_ControllerOrient = finalTransform.rotation,
                     m_Pressure = 1f,
                     m_TimestampMs = (uint)(t1 * kSecondsToMs)
                 };
@@ -394,6 +402,8 @@ namespace TiltBrush
                     m_Orient = xf.rotation,
                     m_HeadPos = xf.translation,
                     m_HeadOrient = xf.rotation,
+                    m_ControllerPos = xf.translation,
+                    m_ControllerOrient = xf.rotation,
                     m_Pressure = 1f,
                     m_TimestampMs = (uint)(Mathf.Lerp((float)t0, (float)t1, t) * 1000)
                 };

@@ -1973,7 +1973,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4739345775552342270}
-  - component: {fileID: 2732114305131823418}
+  - component: {fileID: 3506852327841776554}
   m_Layer: 14
   m_Name: QuestRightControllerGeometry
   m_TagString: Untagged
@@ -2002,7 +2002,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2732114305131823418
+--- !u!114 &3506852327841776554
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2011,9 +2011,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 4740093186570995350}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 701e5e1d948a9f64cb89ca23f14cf23a, type: 3}
+  m_Script: {fileID: 11500000, guid: 69d9a65c756326949a22644509f24bf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Wand: {fileID: 0}
+  m_Brush: {fileID: 0}
+  m_TrackingComponents: []
+  m_HapticsDurationScale: 1
+  m_HapticAmplitudeScale: 1
+  m_TriggerActivationRange: {x: 0.15, y: 0.8}
+  m_GripActivationRange: {x: 0.15, y: 0.8}
+  m_TouchpadActivationRange: {x: -0.8, y: 0.8}
+  m_LogitechPenActivationRange: {x: 0, y: 1}
+  m_WandRotateJoystickPercent: 0.7
 --- !u!1 &4740093186589751870
 GameObject:
   m_ObjectHideFlags: 0

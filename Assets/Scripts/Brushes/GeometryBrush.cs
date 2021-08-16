@@ -301,6 +301,8 @@ namespace TiltBrush
                     m_Orient = ori,
                     m_HeadPos = pos,
                     m_HeadOrient = ori,
+                    m_ControllerPos = pos,
+                    m_ControllerOrient = ori,
                     m_Pressure = 1
                 },
                 length = 0,
@@ -348,6 +350,8 @@ namespace TiltBrush
                     m_Orient = ori,
                     m_HeadPos = pos,
                     m_HeadOrient = ori,
+                    m_ControllerPos = pos,
+                    m_ControllerOrient = ori,
                     m_Pressure = 1
                 },
                 length = 0,
@@ -442,8 +446,10 @@ namespace TiltBrush
             Knot updated = m_knots[iUpdate];
             updated.point.m_Pos = pos;
             updated.point.m_Orient = ori;
-            updated.point.m_HeadPos = pos;
-            updated.point.m_HeadOrient = ori;
+            //updated.point.m_HeadPos = pos;
+            //updated.point.m_HeadOrient = ori;
+            //updated.point.m_ControllerPos = pos;
+            //updated.point.m_ControllerOrient = ori;
             updated.point.m_Pressure = pressure;
             updated.point.m_TimestampMs = (uint)(App.Instance.CurrentSketchTime * 1000);
             updated.smoothedPos = pos;

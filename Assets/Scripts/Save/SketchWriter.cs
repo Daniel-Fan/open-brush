@@ -106,7 +106,7 @@ namespace TiltBrush
                 uint sizeofCP = (uint)sizeof(PointerManager.ControlPoint);
                 uint extensionBytes = 4 * CountOnes(PointerManager.ControlPoint.EXTENSIONS);
                 System.Diagnostics.Debug.Assert(
-                    sizeofCP == 2 * (sizeof(Vector3) + sizeof(Quaternion)) + extensionBytes);
+                    sizeofCP == 3 * (sizeof(Vector3) + sizeof(Quaternion)) + extensionBytes);
             }
         }
 
@@ -243,6 +243,8 @@ namespace TiltBrush
                         writer.Quaternion(rControlPoint.m_Orient);
                         writer.Vec3(rControlPoint.m_HeadPos);
                         writer.Quaternion(rControlPoint.m_HeadOrient);
+                        writer.Vec3(rControlPoint.m_ControllerPos);
+                        writer.Quaternion(rControlPoint.m_ControllerOrient);
                         // Control point extension fields, in order of appearance in the mask
                         writer.Float(rControlPoint.m_Pressure);
                         writer.UInt32(rControlPoint.m_TimestampMs);
@@ -449,6 +451,8 @@ namespace TiltBrush
                         rControlPoint.m_Orient = reader.Quaternion();
                         rControlPoint.m_HeadPos = reader.Vec3();
                         rControlPoint.m_HeadOrient = reader.Quaternion();
+                        rControlPoint.m_ControllerPos = reader.Vec3();
+                        rControlPoint.m_ControllerOrient = reader.Quaternion();
 
                         // known extension field defaults
                         rControlPoint.m_Pressure = 1.0f;

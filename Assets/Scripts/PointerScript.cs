@@ -503,6 +503,7 @@ namespace TiltBrush
         {
             var xf_LS = GetTransformForLine(m_CurrentLine.transform, Coords.AsRoom[transform]);
             var xf_HeadLS = Coords.AsCanvas[ViewpointScript.Head];
+            var xf_ControllerCS = Coords.AsCanvas[InputManager.Brush.Transform];
 
             if (!PointerManager.m_Instance.IsMainPointerProcessingLine() && m_CurrentCreator != null)
             {
@@ -543,7 +544,7 @@ namespace TiltBrush
             bool bQuadCreated = m_CurrentLine.UpdatePosition_LS(xf_LS, m_CurrentPressure);
 
             // TODO: let brush take care of storing control points, not us
-            SetControlPoint(xf_LS, xf_HeadLS, isKeeper: bQuadCreated);
+            SetControlPoint(xf_LS, xf_HeadLS, xf_ControllerCS, isKeeper: bQuadCreated);
 
             // TODO: Pointers should hold a reference to the stencil they're painting on.  This
             // is a hacky temporary check to ensure mirrored pointers don't add to the lift of
@@ -788,13 +789,15 @@ namespace TiltBrush
         /// The current pointer is /not/ queried to get the transform of the new
         /// control point. Instead, caller is responsible for passing in the same
         /// xf that was passed to line.UpdatePosition_LS()
-        public void SetControlPoint(TrTransform lastSpawnXf_LS, TrTransform lastSpawnXf_HeadLS, bool isKeeper)
+        public void SetControlPoint(TrTransform lastSpawnXf_LS, TrTransform lastSpawnXf_HeadLS, TrTransform lastSpawnXf_ControllerLS, bool isKeeper)
         {
             PointerManager.ControlPoint rControlPoint;
             rControlPoint.m_Pos = lastSpawnXf_LS.translation;
             rControlPoint.m_Orient = lastSpawnXf_LS.rotation;
             rControlPoint.m_HeadPos = lastSpawnXf_HeadLS.translation;
             rControlPoint.m_HeadOrient = lastSpawnXf_HeadLS.rotation;
+            rControlPoint.m_ControllerPos = lastSpawnXf_ControllerLS.translation;
+            rControlPoint.m_ControllerOrient = lastSpawnXf_ControllerLS.rotation;
             rControlPoint.m_Pressure = m_CurrentPressure;
             rControlPoint.m_TimestampMs = (uint)(App.Instance.CurrentSketchTime * 1000);
 

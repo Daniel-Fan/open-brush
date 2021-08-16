@@ -103,7 +103,7 @@ namespace TiltBrush
             UnityEngine.Debug.Log("Assign the Avator variables");
             var rOculusAvatar = m_oculusAvatar.gameObject;
             UnityEngine.Debug.Log("Assign the controller variables");
-            // var rVrController = m_vrcontroller.gameObject;
+            var rVrController = m_vrcontroller.gameObject;
 
             bool needMeshUpdate = false;
             bool needPointerUpdate = false;
@@ -167,9 +167,9 @@ namespace TiltBrush
                 xf_GS_avatar.scale = rOculusAvatar.transform.GetUniformScale();
                 Coords.AsGlobal[rOculusAvatar.transform] = xf_GS_avatar;
 
-                //var xf_GS_controller = Coords.CanvasPose * TrTransform.TR(lastCp.m_Pos, lastCp.m_Orient);
-                //xf_GS_controller.scale = rVrController.transform.GetUniformScale();
-                //Coords.AsGlobal[rVrController.transform] = xf_GS_controller;
+                var xf_GS_controller = Coords.CanvasPose * TrTransform.TR(lastCp.m_ControllerPos, lastCp.m_ControllerOrient);
+                xf_GS_controller.scale = rVrController.transform.GetUniformScale();
+                Coords.AsGlobal[rVrController.transform] = xf_GS_controller;
 
                 // This is only really done for visual reasons
                 var xf_GS = Coords.CanvasPose * TrTransform.TR(lastCp.m_Pos, lastCp.m_Orient);

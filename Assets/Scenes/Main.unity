@@ -1141,12 +1141,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1711ff795b0eac4da4815318e17b3fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_VrControllerPrefab: {fileID: 7615493206362998395, guid: 85830ce4b1aeaef44ab2195e775848c3,
-    type: 3}
-  m_OculusAvatarPrefab: {fileID: 4740093186570995350, guid: 891403b95ebc765428c0723c37c9c904,
-    type: 3}
-  m_IndicatorPrefab: {fileID: 8496306414830335062, guid: dcf17254dcd71d64d8829635cba3702e,
-    type: 3}
   m_MaxPointers: 10
   m_MainPointerPrefab: {fileID: 133060, guid: 9b51341e2f5f13c4e8421b42c44de1ef, type: 3}
   m_AuxPointerPrefab: {fileID: 130268, guid: 7731b9109b4c6e84eaee3f77c6c6c6e1, type: 3}
@@ -14906,9 +14900,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b650ee9e3029134491321cddce45622, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_VrControllerPrefab: {fileID: 7615493206362998395, guid: 85830ce4b1aeaef44ab2195e775848c3,
+  m_VrControllerPrefab: {fileID: 4740093186570995350, guid: 891403b95ebc765428c0723c37c9c904,
     type: 3}
-  m_OculusAvatarPrefab: {fileID: 4740093186570995350, guid: 891403b95ebc765428c0723c37c9c904,
+  m_OculusAvatarPrefab: {fileID: 3275010073449436016, guid: 396e715f2b5b4de4d9818c028d93c9d4,
     type: 3}
   m_IndicatorPrefab: {fileID: 8496306414830335062, guid: dcf17254dcd71d64d8829635cba3702e,
     type: 3}
