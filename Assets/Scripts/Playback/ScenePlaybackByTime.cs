@@ -75,6 +75,24 @@ namespace TiltBrush
         // List of rendered strokes ordered by tail timestamp, latest first
         private SortedLinkedList<Stroke> m_renderedStrokes;
         private int m_strokeCount;
+
+        //private int m_popedStrokeCount = 0;
+        //private int m_prepopedStrokeCount = 0;
+        private uint m_lastStrokeTailTimeMs = 0;
+        private uint m_nextStrokeHeadTimeMs = 0;
+        private Vector3 m_lastHeadPosition;
+        private Quaternion m_lastHeadOrient;
+        private Vector3 m_nextHeadPosition;
+        private Quaternion m_nextHeadOrient;
+        private Vector3 m_lastControllerPosition;
+        private Quaternion m_lastControllerOrient;
+        private Vector3 m_nextControllerPosition;
+        private Quaternion m_nextControllerOrient;
+        private Vector3 m_lastIndicatorPosition;
+        private Quaternion m_lastIndicatorOrient;
+        private Vector3 m_nextIndicatorPosition;
+        private Quaternion m_nextIndicatorOrient;
+
         private int m_maxPointerUnderrun = 0;
         private CanvasScript m_targetCanvas;
 
@@ -108,6 +126,7 @@ namespace TiltBrush
             // to the undrawn state.
             if (currentTimeMs < m_lastTimeMs)
             {
+                Debug.Log("currentTimeMs is less than m_lastTimeMs");
                 // any stroke in progress is implicated by rewind-- clear the stroke's playback
                 foreach (var stroke in m_strokePlaybacks)
                 {
@@ -138,6 +157,7 @@ namespace TiltBrush
             if (currentTimeMs != 0)
             {
                 Debug.Log("PlayBack by Time Update() before for loop.");
+                Debug.LogFormat("m_strokePlaybacks.Length is {0}", m_strokePlaybacks.Length);
                 for (int i = 0; i < m_strokePlaybacks.Length; ++i)
                 {
                     var stroke = m_strokePlaybacks[i];
@@ -156,6 +176,35 @@ namespace TiltBrush
                         !m_unrenderedStrokes.First.Value.IsVisibleForPlayback))
                     {
                         var node = m_unrenderedStrokes.PopFirst();
+                        // what if the next stroke is not visible
+                        if (m_unrenderedStrokes.Count > 0)
+                        {
+                            Debug.Log("Start to record next Stroke info");
+                            m_nextStrokeHeadTimeMs = m_unrenderedStrokes.First.Value.HeadTimestampMs;
+
+                            m_nextHeadPosition = m_unrenderedStrokes.First.Value.FirstHeadPosition;
+                            m_nextHeadOrient = m_unrenderedStrokes.First.Value.FirstHeadOrient;
+
+                            m_nextControllerPosition = m_unrenderedStrokes.First.Value.FirstControllerPosition;
+                            m_nextControllerOrient = m_unrenderedStrokes.First.Value.FirstControllerOrient;
+
+                            m_nextIndicatorPosition = m_unrenderedStrokes.First.Value.FirstIndicatorPosition;
+                            m_nextIndicatorOrient = m_unrenderedStrokes.First.Value.FirstIndicatorOrient;
+
+                            Debug.Log("Finish to record next Stroke info");
+                            m_lastStrokeTailTimeMs = node.Value.TailTimestampMs;
+
+                            m_lastHeadPosition = node.Value.LastHeadPosition;
+                            m_lastHeadOrient = node.Value.LastHeadOrient;
+
+                            m_lastControllerPosition = node.Value.LastControllerPosition;
+                            m_lastControllerOrient = node.Value.LastControllerOrient;
+
+                            m_lastIndicatorPosition = node.Value.LastIndicatorPosition;
+                            m_lastIndicatorOrient = node.Value.LastIndicatorOrient;
+                            Debug.Log("Finish to record last Stroke info");
+                        }
+                        // m_popedStrokeCount++;
                         Debug.Log("Before checking the visibility of stroke: " + node.Value.IsVisibleForPlayback);
                         if (node.Value.IsVisibleForPlayback)
                         {
@@ -169,6 +218,9 @@ namespace TiltBrush
                             if (stroke.IsDone())
                             {
                                 m_renderedStrokes.Insert(stroke.StrokeNode);
+                                //m_lastStrokeTailTimeMs = stroke.StrokeNode.Value.TailTimestampMs;
+                                //m_lastHeadPosition = stroke.StrokeNode.Value.LastHeadPosition;
+                                //m_lastHeadOrient = stroke.StrokeNode.Value.LastHeadOrient;
                                 stroke.ClearPlayback();
                             }
                         }
@@ -183,6 +235,45 @@ namespace TiltBrush
                     }
                 }
 
+                if (pendingStrokes == 0)
+                {
+                    // consider m_unrenderedStrokes.First.Value.IsVisibleForPlayback
+                    // m_prepopedStrokeCount++;
+                    Debug.Log("Node is interpolating");
+                    Debug.LogFormat("m_lastStrokeTailTimeMsn is {0}", m_lastStrokeTailTimeMs);
+                    Debug.LogFormat("m_nextStrokeHeadTimeMs is {0}", m_nextStrokeHeadTimeMs);
+                    Debug.LogFormat("currentTimeMs is {0}", currentTimeMs);
+
+                    var deltaTime = (float)(currentTimeMs - m_lastStrokeTailTimeMs) / (m_nextStrokeHeadTimeMs - m_lastStrokeTailTimeMs);
+                    Debug.LogFormat("Finish interpolating at fraction {0}", deltaTime);
+
+                    // Head Object
+                    var m_oculusAvatar = PlayBackObject.m_Instance.GetAvatar();
+                    var rOculusAvatar = m_oculusAvatar.gameObject;
+                    var HeadPos = Vector3.Lerp(m_lastHeadPosition, m_nextHeadPosition, deltaTime);
+                    var HeadOrient = Quaternion.Lerp(m_lastHeadOrient, m_nextHeadOrient, deltaTime);
+                    var xf_GS_avatar = Coords.CanvasPose * TrTransform.TR(HeadPos, HeadOrient);
+                    xf_GS_avatar.scale = rOculusAvatar.transform.GetUniformScale();
+                    Coords.AsGlobal[rOculusAvatar.transform] = xf_GS_avatar;
+
+                    // Indicator Object
+                    var m_strokeIndicator = PlayBackObject.m_Instance.GetIndicator();
+                    var rStrokeIndicator = m_strokeIndicator.gameObject;
+                    var IndicatorPos = Vector3.Lerp(m_lastIndicatorPosition, m_nextIndicatorPosition, deltaTime);
+                    var IndicatorOrient = Quaternion.Lerp(m_lastIndicatorOrient, m_nextIndicatorOrient, deltaTime);
+                    var xf_GS_indicator = Coords.CanvasPose * TrTransform.TR(IndicatorPos, IndicatorOrient);
+                    xf_GS_indicator.scale = rStrokeIndicator.transform.GetUniformScale();
+                    Coords.AsGlobal[rStrokeIndicator.transform] = xf_GS_indicator;
+                    
+                    // Controller Object
+                    var m_vrcontroller = PlayBackObject.m_Instance.GetController();
+                    var rVrController = m_vrcontroller.gameObject;
+                    var ControllerPos = Vector3.Lerp(m_lastControllerPosition, m_nextControllerPosition, deltaTime);
+                    var ControllerOrient = Quaternion.Lerp(m_lastControllerOrient, m_nextControllerOrient, deltaTime);
+                    var xf_GS_controller = Coords.CanvasPose * TrTransform.TR(ControllerPos, ControllerOrient);
+                    xf_GS_controller.scale = rVrController.transform.GetUniformScale();
+                    Coords.AsGlobal[rVrController.transform] = xf_GS_controller;
+                }
                 // check for pointer underrun
                 int underrun = 0;
                 foreach (var obj in m_unrenderedStrokes)

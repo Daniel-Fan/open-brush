@@ -122,6 +122,66 @@ namespace TiltBrush
             get { return this.m_ControlPoints.Last().m_TimestampMs; }
         }
 
+        public Vector3 FirstHeadPosition
+        {
+            get { return this.m_ControlPoints[0].m_HeadPos; }
+        }
+
+        public Vector3 LastHeadPosition
+        {
+            get { return this.m_ControlPoints.Last().m_HeadPos; }
+        }
+
+        public Quaternion FirstHeadOrient
+        {
+            get { return this.m_ControlPoints[0].m_HeadOrient; }
+        }
+
+        public Quaternion LastHeadOrient
+        {
+            get { return this.m_ControlPoints.Last().m_HeadOrient; }
+        }
+
+        public Vector3 FirstControllerPosition
+        {
+            get { return this.m_ControlPoints[0].m_ControllerPos; }
+        }
+
+        public Vector3 LastControllerPosition
+        {
+            get { return this.m_ControlPoints.Last().m_ControllerPos; }
+        }
+
+        public Quaternion FirstControllerOrient
+        {
+            get { return this.m_ControlPoints[0].m_ControllerOrient; }
+        }
+
+        public Quaternion LastControllerOrient
+        {
+            get { return this.m_ControlPoints.Last().m_ControllerOrient; }
+        }
+
+        public Vector3 FirstIndicatorPosition
+        {
+            get { return this.m_ControlPoints[0].m_Pos; }
+        }
+
+        public Vector3 LastIndicatorPosition
+        {
+            get { return this.m_ControlPoints.Last().m_Pos; }
+        }
+
+        public Quaternion FirstIndicatorOrient
+        {
+            get { return this.m_ControlPoints[0].m_Orient; }
+        }
+
+        public Quaternion LastIndicatorOrient
+        {
+            get { return this.m_ControlPoints.Last().m_Orient; }
+        }
+
         public float SizeInLocalSpace
         {
             get

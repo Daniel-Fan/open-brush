@@ -894,7 +894,7 @@ namespace TiltBrush
                     PointerManager.m_Instance.SetInPlaybackMode(false);
                     PointerManager.m_Instance.RequestPointerRendering(true);
                     m_ScenePlayback = null;
-                    Debug.Log("Starting Clear PlayBack Object");
+                    Debug.Log("Starting Clear PlayBack Object in Continue Drawing");
                     PlayBackObject.m_Instance.ClearPlayBack();
                     Debug.Log("Finish Clear PlayBack Object");
                 }
@@ -929,12 +929,13 @@ namespace TiltBrush
                 m_ScenePlayback.QuickLoadRemaining();
                 m_ScenePlayback.Update();
                 m_ScenePlayback = null;
-                Debug.Log("Starting Clear PlayBack Object");
+                Debug.Log("Starting Clear PlayBack Object in Redraw when playback is null");
                 PlayBackObject.m_Instance.ClearPlayBack();
                 Debug.Log("Finish Clear PlayBack Object");
             }
             else
             { // timeline edit mode
+                Debug.Log("Starting Clear PlayBack Object in Redraw in timeline mode");
                 var savedSketchTime = App.Instance.CurrentSketchTime;
                 App.Instance.CurrentSketchTime = 0;
                 m_ScenePlayback.Update();
