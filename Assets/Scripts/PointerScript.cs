@@ -303,8 +303,10 @@ namespace TiltBrush
         void Update()
         {
             //update brush audio
+            Debug.Log("In PointerScript Update");
             if (m_AudioSources.Length > 0)
             {
+                Debug.Log("m_AudioSources.Length > 0");
                 //smooth volume and pitch out a bit from frame to frame
                 float fFadeStepUp = m_BrushAudioAdjustSpeedUp * Time.deltaTime;
                 float fFadeStepDown = m_BrushAudioAdjustSpeedDown * Time.deltaTime;
@@ -322,6 +324,7 @@ namespace TiltBrush
                     m_AudioSources[i].pitch += fPitchAdjust;
                 }
             }
+            Debug.Log("Finish PointerScript Update");
         }
 
         // Defines volume of a specific layer, given the total volume of the brush;
@@ -544,6 +547,7 @@ namespace TiltBrush
             bool bQuadCreated = m_CurrentLine.UpdatePosition_LS(xf_LS, m_CurrentPressure);
 
             // TODO: let brush take care of storing control points, not us
+            Debug.Log("Set Control Point in UpdateLineFromObject");
             SetControlPoint(xf_LS, xf_HeadLS, xf_ControllerCS, isKeeper: bQuadCreated);
 
             // TODO: Pointers should hold a reference to the stencil they're painting on.  This

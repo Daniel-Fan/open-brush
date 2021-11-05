@@ -374,6 +374,7 @@ namespace TiltBrush
         {
             // If we've been requested to eat input, discard any valid input until we've received
             //  some invalid input.
+            Debug.Log("EnableLine is bEnable: " + bEnable);
             if (m_EatLineEnabledInputFrames > 0)
             {
                 if (!bEnable)
@@ -399,14 +400,14 @@ namespace TiltBrush
         }
 
         // ---- Unity events
-
         void Awake()
         {
             m_Instance = this;
-
+            
             Debug.Assert(m_MaxPointers > 0);
             m_Pointers = new PointerData[m_MaxPointers];
 
+            Debug.Log("m_MaxPointers and lenght of m_pointers is " + m_MaxPointers);
             //// create new object for OculusAvatar
             //var avatar = new Avatar();
             //GameObject a_obj = (GameObject)Instantiate(m_OculusAvatarPrefab);
@@ -513,6 +514,7 @@ namespace TiltBrush
             //update pointers
             if (!m_InPlaybackMode && !PanelManager.m_Instance.IntroSketchbookMode)
             {
+                Debug.Log("Playback mode is" + m_InPlaybackMode);
                 // This is special code to prevent z-fighting in monoscopic mode.
                 float fPointerLift = 0.0f;
                 if (App.VrSdk.GetHmdDof() == VrSdk.DoF.None)
@@ -551,11 +553,14 @@ namespace TiltBrush
             if (!m_PointersHideOnControllerLoss || InputManager.Brush.IsTrackedObjectValid)
             {
                 //show pointers according to requested visibility
+                Debug.Log("Pointer hide is " + m_PointersHideOnControllerLoss);
+                Debug.Log("m_PointersRenderingRequested is " + m_PointersRenderingRequested);
                 SetPointersRenderingEnabled(m_PointersRenderingRequested);
             }
             else
             {
                 //turn off pointers
+                Debug.Log("Get into else, Pointer hide is" + m_PointersHideOnControllerLoss);
                 SetPointersRenderingEnabled(false);
                 DisablePointerPreviewLine();
             }
@@ -590,6 +595,7 @@ namespace TiltBrush
         {
             if (m_PointersRenderingActive != bEnable)
             {
+                Debug.Log("m_PointersRenderingActive != bEnable");
                 foreach (PointerData rData in m_Pointers)
                 {
                     rData.m_Script.EnableRendering(bEnable && rData.m_UiEnabled);
@@ -930,10 +936,12 @@ namespace TiltBrush
         public void UpdateLine()
         {
             bool playbackPointersAvailable = m_NumActivePointers <= NumFreePlaybackPointers();
-
+            Debug.Log("playbackPointersAvailable " + playbackPointersAvailable);
             switch (m_CurrentLineCreationState)
             {
                 case LineCreationState.WaitingForInput:
+                    Debug.Log("Wait for input");
+                    Debug.Log("m_LineEnabled in WaitingForInput " + m_LineEnabled);
                     if (m_LineEnabled)
                     {
                         if (playbackPointersAvailable)
@@ -942,6 +950,7 @@ namespace TiltBrush
                         }
                         else
                         {
+                            Debug.Log("Drawing disabllowed");
                             OnDrawDisallowed();
                         }
                     }
@@ -949,8 +958,10 @@ namespace TiltBrush
 
                 // TODO: unique state for capturing straightedge 2nd point rather than overload RecordingInput
                 case LineCreationState.RecordingInput:
+                    Debug.Log("Recording input");
                     if (m_LineEnabled)
                     {
+                        Debug.Log("Line enabled");
                         if (playbackPointersAvailable)
                         {
                             // Check straightedge gestures.
@@ -981,6 +992,7 @@ namespace TiltBrush
                     }
                     else
                     {
+                        Debug.Log("Line is not enabled");
                         // Transition to either ProcessingStraightEdge or WaitingForInput
                         if (m_StraightEdgeProxyActive)
                         {
@@ -1102,6 +1114,7 @@ namespace TiltBrush
 
                 p.m_Script.CreateNewLine(canvas, xf_CS, null);
                 p.m_Script.SetPressure(STRAIGHTEDGE_PRESSURE);
+                Debug.Log("Set Control Point in Transition_RecordingInput_ProcessingStraightEdge");
                 p.m_Script.SetControlPoint(xf_CS, xf_HeadCS, xf_ControllerCS, isKeeper: true);
             }
 
@@ -1209,6 +1222,7 @@ namespace TiltBrush
                 script.CreateNewLine(
                     canvas, xfPointer_CS, currentCreator,
                     m_StraightEdgeProxyActive ? m_StraightEdgeProxyBrush : null);
+                Debug.Log("Set Control Point in InitiateLine");
                 script.SetControlPoint(xfPointer_CS, xfHead_CS, xfController_CS, isKeeper: true);
             }
         }

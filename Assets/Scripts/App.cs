@@ -1068,8 +1068,11 @@ namespace TiltBrush
                     }
                 case AppState.Loading:
                     {
+                        Debug.Log("App is in Loading state");
                         HandleExternalTiltOpenRequest();
                         SketchControlsScript.m_Instance.UpdateControlsForLoading();
+                        SketchControlsScript.m_Instance.UpdateControls();
+                        PanelManager.m_Instance.ReviveFloatingPanelsForStartup();
 
                         if (WidgetManager.m_Instance.CreatingMediaWidgets)
                         {
@@ -1424,6 +1427,7 @@ namespace TiltBrush
                     m_IntroFadeTimer = 0;
                     break;
                 case AppState.Loading:
+                    Debug.Log("App is switching to Loading state");
                     if (m_IntroFadeTimer > 0)
                     {
                         AudioManager.m_Instance.SetMusicVolume(0.0f);
@@ -1451,14 +1455,20 @@ namespace TiltBrush
                     {
                         SketchSurfacePanel.m_Instance.EnableDefaultTool();
                     }
-                    PointerManager.m_Instance.RequestPointerRendering(false);
-                    SketchControlsScript.m_Instance.RequestPanelsVisibility(false);
-                    SketchControlsScript.m_Instance.ResetActivePanel();
-                    PanelManager.m_Instance.HideAllPanels();
-                    SketchControlsScript.m_Instance.ForceShowUIReticle(false);
+                    PointerManager.m_Instance.RequestPointerRendering(true);
+                    PointerManager.m_Instance.EnableLine(true);
+                    //SketchControlsScript.m_Instance.RequestPanelsVisibility(false);
+                    //SketchControlsScript.m_Instance.ResetActivePanel();
+                    //PanelManager.m_Instance.HideAllPanels();
+                    //SketchControlsScript.m_Instance.ForceShowUIReticle(false);
                     PointerManager.m_Instance.SetSymmetryMode(PointerManager.SymmetryMode.None, false);
-                    WidgetManager.m_Instance.LoadingState(true);
-                    WidgetManager.m_Instance.StencilsDisabled = true;
+                    //WidgetManager.m_Instance.LoadingState(true);
+                    //WidgetManager.m_Instance.StencilsDisabled = true;
+
+                    m_SketchSurfacePanel.EnableRenderer(true);
+                    SketchControlsScript.m_Instance.RequestPanelsVisibility(true);
+                    SketchSurfacePanel.m_Instance.RequestHideActiveTool(false);
+                    SketchControlsScript.m_Instance.RestoreFloatingPanels();
                     break;
                 case AppState.QuickLoad:
                     SketchMemoryScript.m_Instance.QuickLoadDrawingMemory();

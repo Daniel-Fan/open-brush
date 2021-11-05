@@ -971,6 +971,7 @@ namespace TiltBrush
 
         public void UpdateControls()
         {
+            Debug.Log("Starting to Update Controls");
             UnityEngine.Profiling.Profiler.BeginSample("SketchControlsScript.UpdateControls");
             m_SketchSurfacePanel.m_UpdatedToolThisFrame = false;
 
@@ -1074,7 +1075,8 @@ namespace TiltBrush
                             PointerManager.m_Instance.SetMainPointerPosition(vPointerPos);
                             PointerManager.m_Instance.SetMainPointerForward(vPointerForward);
                         }
-
+                        Debug.Log("Current Input State is " + (int)m_CurrentInputState);
+                        Debug.Log("Current Input State allowing drawing: " + m_InputStateConfigs[(int)m_CurrentInputState].m_AllowDrawing);
                         m_SketchSurfacePanel.AllowDrawing(m_InputStateConfigs[(int)m_CurrentInputState].m_AllowDrawing);
                         m_SketchSurfacePanel.UpdateCurrentTool();
 
@@ -1097,7 +1099,9 @@ namespace TiltBrush
             UpdateWorldTransformReset();
 
             //update our line after all input and tools have chimed in on the state of it
+            Debug.Log("Before Update Line in Update Control");
             PointerManager.m_Instance.UpdateLine();
+            Debug.Log("After Update Line in Update Control");
             UnityEngine.Profiling.Profiler.EndSample();
         }
 
@@ -1239,10 +1243,15 @@ namespace TiltBrush
         {
             // Are the panels allowed to be visible?
             bool isSixDof = m_ControlsType == ControlsType.SixDofControllers;
+            Debug.Log("In UpdateGazeObjectsAnimationState");
+            Debug.Log("!m_SketchSurfacePanel.ActiveTool.HidePanels() is " + !m_SketchSurfacePanel.ActiveTool.HidePanels());
+            //if ((!isSixDof) ||
+            //    (InputManager.Wand.IsTrackedObjectValid &&
+            //    !m_SketchSurfacePanel.ActiveTool.HidePanels() &&
+            //    !App.Instance.IsLoading()))
             if ((!isSixDof) ||
                 (InputManager.Wand.IsTrackedObjectValid &&
-                !m_SketchSurfacePanel.ActiveTool.HidePanels() &&
-                !App.Instance.IsLoading()))
+                !m_SketchSurfacePanel.ActiveTool.HidePanels()))
             {
                 // Transition panels according to requested visibility.
                 m_PanelManager.SetVisible(m_PanelsVisibilityRequested);
@@ -2232,8 +2241,7 @@ namespace TiltBrush
             m_MaybeDriftingGrabWidget = rPrevGrabWidget;
 
             m_GrabWidgetState = GrabWidgetState.None;
-            PointerManager.m_Instance.RequestPointerRendering(!App.Instance.IsLoading() &&
-                m_SketchSurfacePanel.ShouldShowPointer());
+            PointerManager.m_Instance.RequestPointerRendering(m_SketchSurfacePanel.ShouldShowPointer());
             RequestPanelsVisibility(true);
             m_SketchSurfacePanel.RequestHideActiveTool(false);
             rPrevGrabWidget.UserInteracting(false);
@@ -2476,7 +2484,7 @@ namespace TiltBrush
                 m_SketchSurfacePanel.RequestHideActiveTool(m_GrabBrush.grabbingWorld);
                 PointerManager.m_Instance.AllowPointerPreviewLine(!m_GrabBrush.grabbingWorld);
                 PointerManager.m_Instance.RequestPointerRendering(!m_GrabBrush.grabbingWorld
-                    && m_SketchSurfacePanel.ShouldShowPointer() && !App.Instance.IsLoading());
+                    && m_SketchSurfacePanel.ShouldShowPointer());
             }
 
             // Reset m_WorldBeingGrabbed and only set it when world is actually being grabbed.
@@ -2504,9 +2512,10 @@ namespace TiltBrush
                     // Are we initiating two hand transform this frame?
                     if (!bWorldGrabWandPrev || !bWorldGrabBrushPrev)
                     {
-                        PointerManager.m_Instance.EnableLine(false);
-                        PointerManager.m_Instance.AllowPointerPreviewLine(false);
-                        PointerManager.m_Instance.RequestPointerRendering(false);
+                        Debug.Log("EnableLine is disabled in UpdateGrab_World");
+                        // PointerManager.m_Instance.EnableLine(false);
+                        // PointerManager.m_Instance.AllowPointerPreviewLine(false);
+                        // PointerManager.m_Instance.RequestPointerRendering(false);
                         // Initiate audio loop
                         m_WorldTransformSpeedSmoothed = 0.0f;
                         AudioManager.m_Instance.WorldGrabLoop(true);
@@ -3144,8 +3153,9 @@ namespace TiltBrush
                     //make sure our line is disabled
                     if (m_GazeResults[m_CurrentGazeObject].m_ControllerName == InputManager.ControllerName.Brush)
                     {
-                        PointerManager.m_Instance.EnableLine(false);
-                        PointerManager.m_Instance.AllowPointerPreviewLine(false);
+                        Debug.Log("EnableLine is disabled in RefreshCurrentGazeObject");
+                        // PointerManager.m_Instance.EnableLine(false);
+                        // PointerManager.m_Instance.AllowPointerPreviewLine(false);
                     }
 
                     aAllPanels[m_CurrentGazeObject].m_Panel.PanelGazeActive(true);
@@ -3678,6 +3688,7 @@ namespace TiltBrush
         public void RequestPanelsVisibility(bool bVisible)
         {
             m_PanelsVisibilityRequested = bVisible;
+            Debug.Log("m_PanelsVisibilityRequested is" + bVisible);
         }
 
         Quaternion OrientSketchSurfaceToUp()
@@ -4096,7 +4107,7 @@ namespace TiltBrush
             if (SaveLoadScript.m_Instance.Load(fileInfo))
             {
                 SketchMemoryScript.m_Instance.SetPlaybackMode(m_SketchPlaybackMode, m_DefaultSketchLoadSpeed);
-                SketchMemoryScript.m_Instance.BeginDrawingFromMemory(bDrawFromStart: true);
+                SketchMemoryScript.m_Instance.BeginDrawingFromMemory(bDrawFromStart: true, forEdit: true);
                 // the order of these two lines are important as ExitIntroSketch is setting the
                 // color of the pointer and we need the color to be set before we go to the Loading
                 // state. App script's ShouldTintControllers allow the controller to be tinted only

@@ -848,7 +848,7 @@ namespace TiltBrush
         }
 
         /// timeline edit mode: if forEdit is true, play audio countdown and keep user pointers enabled
-        public void BeginDrawingFromMemory(bool bDrawFromStart, bool forEdit = false)
+        public void BeginDrawingFromMemory(bool bDrawFromStart, bool forEdit = true)
         {
             if (bDrawFromStart)
             {

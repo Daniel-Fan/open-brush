@@ -284,6 +284,7 @@ namespace TiltBrush
         public void RequestHideActiveTool(bool bHide)
         {
             m_ToolHideRequested = bHide;
+            Debug.Log("m_ToolHideRequested is" + bHide);
         }
 
         bool IsScrollableTool(BaseTool.ToolType rType)
@@ -393,10 +394,10 @@ namespace TiltBrush
                 ActiveTool.EatInput();
 
                 // If we're currently loading, hide our default tool.
-                if (App.Instance.IsLoading())
-                {
-                    PointerManager.m_Instance.RequestPointerRendering(false);
-                }
+                //if (App.Instance.IsLoading())
+                //{
+                //    PointerManager.m_Instance.RequestPointerRendering(false);
+                //}
             }
             UnityEngine.Profiling.Profiler.EndSample();
         }
@@ -485,6 +486,7 @@ namespace TiltBrush
         public void EnableRenderer(bool bEnable)
         {
             //disable all tools
+            Debug.Log("EnableRenderer with value " + bEnable);
             for (int i = 0; i < m_Tools.Length; ++i)
             {
                 m_Tools[i].EnableRenderer(bEnable && (m_ActiveToolIndex == i));

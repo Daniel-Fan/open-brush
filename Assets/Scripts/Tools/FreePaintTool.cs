@@ -43,6 +43,7 @@ namespace TiltBrush
             base.EnableTool(bEnable);
             if (!bEnable)
             {
+                Debug.Log("EnableLine is disabled in EnableTool for FreePaintTool");
                 PointerManager.m_Instance.EnableLine(false);
                 WidgetManager.m_Instance.ResetActiveStencil();
             }
@@ -76,6 +77,9 @@ namespace TiltBrush
             PositionPointer();
 
             m_PaintingActive = !m_EatInput && !m_ToolHidden && brushTriggerRatio > 0;
+            Debug.Log("m_EatInput is " + m_EatInput);
+            Debug.Log("m_ToolHidden is " + m_ToolHidden);
+            Debug.Log("EnableLine in UpdateTool in FreePaintTool is " + m_PaintingActive);
             PointerManager.m_Instance.EnableLine(m_PaintingActive);
             PointerManager.m_Instance.PointerPressure = InputManager.Brush.GetTriggerRatio();
         }

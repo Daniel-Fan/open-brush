@@ -46,6 +46,7 @@ namespace TiltBrush
             base.EnableTool(bEnable);
             if (!bEnable)
             {
+                Debug.Log("EnableLine is disabled in EnableTool in SketchSurfaceTool");
                 PointerManager.m_Instance.EnableLine(false);
             }
         }
@@ -56,7 +57,10 @@ namespace TiltBrush
 
             bool bEnableLine = InputManager.m_Instance.GetCommand(InputManager.SketchCommands.Activate);
             bEnableLine = bEnableLine && !m_EatInput && m_AllowDrawing && m_SketchSurface.IsSurfaceDrawable();
-
+            Debug.Log("m_EatInput is " + m_EatInput);
+            Debug.Log("m_AllowDrawing is " + m_AllowDrawing);
+            Debug.Log("m_SketchSurface.IsSurfaceDrawable() is " + m_SketchSurface.IsSurfaceDrawable());
+            Debug.Log("EnableLine in UpdateTool in SketchSurfaceTool is " + bEnableLine);
             PointerManager.m_Instance.EnableLine(bEnableLine);
             PointerManager.m_Instance.PointerPressure = 1.0f;
         }

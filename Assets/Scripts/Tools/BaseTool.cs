@@ -72,7 +72,7 @@ namespace TiltBrush
         public bool ToolHidden() { return m_ToolHidden; }
         public void EatInput() { m_EatInput = true; }
         public void AllowDrawing(bool bAllow) { m_AllowDrawing = bAllow; }
-        public virtual bool ShouldShowPointer() { return false; }
+        public virtual bool ShouldShowPointer() { return true; }
 
         virtual public void Init()
         {
@@ -241,7 +241,7 @@ namespace TiltBrush
         // True if this tool can be used while a sketch is loading.
         virtual public bool AvailableDuringLoading()
         {
-            return false;
+            return true;
         }
 
         // If this is true, the tool will tell the panels to hide.
