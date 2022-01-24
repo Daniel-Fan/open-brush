@@ -183,6 +183,8 @@ namespace TiltBrush
                     return GetVrInput(VrInput.Button02 /*half_right*/);
                 case SketchCommands.Fly:
                     return IsTrigger();
+                case SketchCommands.Pause:
+                    return GetVrInput(VrInput.Button04 /*Button A for Ouculus on right Bursh*/);
             }
 
             return false;
@@ -223,6 +225,8 @@ namespace TiltBrush
                     return GetVrInputDown(VrInput.Button04);
                 case SketchCommands.ToggleSelection:
                     return GetVrInputDown(VrInput.Button04);
+                case SketchCommands.Pause:
+                    return GetVrInputDown(VrInput.Button04 /*Button A for Ouculus on right Bursh*/);
             }
             return false;
         }

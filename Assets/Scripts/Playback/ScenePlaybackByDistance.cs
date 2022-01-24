@@ -38,7 +38,7 @@ namespace TiltBrush
             m_playBackAtStrokeGranularity = (m_parent.QuickLoad || (desc?.m_PlayBackAtStrokeGranularity ?? true));
         }
 
-        protected override bool IsControlPointReady(PointerManager.ControlPoint controlPoint)
+        protected override bool IsControlPointReady(PointerManager.ControlPoint controlPoint, double TotalCurrentPauedTimeMs)
         {
             float meters_LS = (controlPoint.m_Pos - m_lastPosition).magnitude * App.UNITS_TO_METERS;
             float pointerToLocal = m_stroke.m_BrushScale;
@@ -145,7 +145,7 @@ namespace TiltBrush
                 playback.Init(stroke, pointer, targetCanvas, indicator, avatar, controller);
                 while (!playback.IsDone())
                 {
-                    playback.Update(); // mutates m_metersRemaining and m_OutOfMeters
+                    playback.Update(0); // mutates m_metersRemaining and m_OutOfMeters
                     if (m_OutOfMeters)
                     {
                         yield return null;

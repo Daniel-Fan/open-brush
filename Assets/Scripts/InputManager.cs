@@ -89,6 +89,7 @@ namespace TiltBrush
             Trash,
             Share,
             Fly,
+            Pause,
         }
 
         /// WARNING: do not arbitrarily rename these enum values.
@@ -706,6 +707,8 @@ namespace TiltBrush
                     return Wand.GetCommand(rCommand);
                 case SketchCommands.Fly:
                     return Brush.GetCommand(rCommand);
+                case SketchCommands.Pause:
+                    return Brush.GetCommand(rCommand);
             }
 
 
@@ -760,6 +763,8 @@ namespace TiltBrush
                 case SketchCommands.Undo:
                 case SketchCommands.Redo:
                     return GetKeyboardShortcutDown(shortcut.Value) || Wand.GetCommandDown(rCommand);
+                case SketchCommands.Pause:
+                    return Brush.GetCommandDown(rCommand);
 
                 case SketchCommands.DuplicateSelection:
                     return (SketchControlsScript.m_Instance.OneHandGrabController != ControllerName.None &&

@@ -90,10 +90,10 @@ namespace TiltBrush
             return m_isDone;
         }
 
-        protected abstract bool IsControlPointReady(PointerManager.ControlPoint controlPoint);
+        protected abstract bool IsControlPointReady(PointerManager.ControlPoint controlPoint, double TotalCurrentPauedTimeMs);
 
         // Continue drawing stroke for this frame.
-        public void Update()
+        public void Update(double TotalCurrentPauedTimeMs)
         {
             if (m_isDone) { return; }
 
@@ -131,7 +131,7 @@ namespace TiltBrush
                 }
                 var cp = m_stroke.m_ControlPoints[m_nextControlPoint];
                 lastCphead = cp;
-                if (!IsControlPointReady(cp))
+                if (!IsControlPointReady(cp, TotalCurrentPauedTimeMs))
                 {
                     break;
                 }

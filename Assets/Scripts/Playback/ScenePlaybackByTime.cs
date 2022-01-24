@@ -41,10 +41,10 @@ namespace TiltBrush
             base.ClearPlayback();
         }
 
-        protected override bool IsControlPointReady(PointerManager.ControlPoint controlPoint)
+        protected override bool IsControlPointReady(PointerManager.ControlPoint controlPoint, double TotalCurrentPauedTimeMs)
         {
             // TODO: API accepts time source function
-            return (controlPoint.m_TimestampMs / 1000F) <= App.Instance.CurrentSketchTime;
+            return (controlPoint.m_TimestampMs / 1000F) <= (App.Instance.CurrentSketchTime - TotalCurrentPauedTimeMs / 1000F);
         }
     }
 
@@ -98,6 +98,10 @@ namespace TiltBrush
 
         public int MaxPointerUnderrun { get { return m_maxPointerUnderrun; } }
         public int MemoryObjectsDrawn { get { return 0; } } // unimplemented
+        public double TotalPausedTimeMs = 0.0;
+        public double LastPausedTimeMs = 0.0;
+        public double CurrentPausedTimeMs = 0.0;
+        public bool IsPaused = false;
 
         // Input strokes must be ordered by head timestamp
         public ScenePlaybackByTimeLayered(IEnumerable<Stroke> strokes)
@@ -120,7 +124,35 @@ namespace TiltBrush
         // Continue drawing stroke for this frame, returning true if more rendering is pending.
         public bool Update()
         {
-            int currentTimeMs = (int)(App.Instance.CurrentSketchTime * 1000);
+            Debug.Log("ScenePlayBackByTime in Update.");
+            if (InputManager.m_Instance.GetCommandDown(InputManager.SketchCommands.Pause))
+            {
+                Debug.Log("Receive the Pause signal.");
+                if (IsPaused)
+                {
+                    IsPaused = false;
+                    TotalPausedTimeMs += App.Instance.CurrentSketchTime * 1000 - LastPausedTimeMs;
+
+                } else
+                {
+                    IsPaused = true;
+                    LastPausedTimeMs = App.Instance.CurrentSketchTime * 1000;
+                }
+            }
+            Debug.LogFormat("Pause is {0}", IsPaused);
+            CurrentPausedTimeMs = 0;
+            if (IsPaused)
+            {
+                CurrentPausedTimeMs = App.Instance.CurrentSketchTime * 1000 - LastPausedTimeMs;
+            }
+
+            double TotalCurrentPauedTimeMs = TotalPausedTimeMs + CurrentPausedTimeMs;
+            int currentTimeMs;
+            currentTimeMs = (int)((App.Instance.CurrentSketchTime * 1000) - TotalCurrentPauedTimeMs);
+            
+            Debug.LogFormat("TotalPausedTimeMs is {0}", TotalPausedTimeMs);
+            Debug.LogFormat("CurrentPausedTimeMs is {0}", CurrentPausedTimeMs);
+            Debug.LogFormat("currentTimeMs is {0}", currentTimeMs);
 
             // Handle a jump back in time by resetting corresponding in-flight or completed strokes
             // to the undrawn state.
@@ -162,8 +194,8 @@ namespace TiltBrush
                 {
                     var stroke = m_strokePlaybacks[i];
                     // update any pending stroke from last frame
-                    Debug.Log("update any pending stroke from last frame");
-                    stroke.Update();
+                    Debug.Log("update any pending stroke from last frame");             
+                    stroke.Update(TotalCurrentPauedTimeMs);
                     Debug.Log("Checking stroke is done: " + stroke.IsDone());
                     if (stroke.IsDone() && stroke.StrokeNode != null)
                     {
@@ -212,9 +244,11 @@ namespace TiltBrush
                             Debug.Log("Check the i value: " + i);
                             Debug.Log("get the transientpointer {0}", PointerManager.m_Instance.GetTransientPointer(i));
                             Debug.Log("Check the total length: " + m_strokePlaybacks.Length);
+                            OutputWindowScript.m_Instance.AddNewLine(
+                            OutputWindowScript.LineType.Special, node.Value.m_Color.ToString());
                             stroke.Init(node, PointerManager.m_Instance.GetTransientPointer(i), m_targetCanvas, PlayBackObject.m_Instance.GetIndicator(), PlayBackObject.m_Instance.GetAvatar(), PlayBackObject.m_Instance.GetController());
                             Debug.Log("update the strokes after it has been init");
-                            stroke.Update();
+                            stroke.Update(TotalCurrentPauedTimeMs);
                             if (stroke.IsDone())
                             {
                                 m_renderedStrokes.Insert(stroke.StrokeNode);
@@ -240,8 +274,6 @@ namespace TiltBrush
                     // consider m_unrenderedStrokes.First.Value.IsVisibleForPlayback
                     // m_prepopedStrokeCount++;
                     Debug.Log("Node is interpolating");
-                    Debug.LogFormat("m_lastStrokeTailTimeMsn is {0}", m_lastStrokeTailTimeMs);
-                    Debug.LogFormat("m_nextStrokeHeadTimeMs is {0}", m_nextStrokeHeadTimeMs);
                     Debug.LogFormat("currentTimeMs is {0}", currentTimeMs);
 
                     var deltaTime = (float)(currentTimeMs - m_lastStrokeTailTimeMs) / (m_nextStrokeHeadTimeMs - m_lastStrokeTailTimeMs);
@@ -264,7 +296,7 @@ namespace TiltBrush
                     var xf_GS_indicator = Coords.CanvasPose * TrTransform.TR(IndicatorPos, IndicatorOrient);
                     xf_GS_indicator.scale = rStrokeIndicator.transform.GetUniformScale();
                     Coords.AsGlobal[rStrokeIndicator.transform] = xf_GS_indicator;
-                    
+
                     // Controller Object
                     var m_vrcontroller = PlayBackObject.m_Instance.GetController();
                     var rVrController = m_vrcontroller.gameObject;
@@ -293,7 +325,7 @@ namespace TiltBrush
                 }
                 m_maxPointerUnderrun = Mathf.Max(m_maxPointerUnderrun, underrun);
             }
-
+            
             Debug.Assert(
                 m_renderedStrokes.Count + pendingStrokes + m_unrenderedStrokes.Count == m_strokeCount);
             m_lastTimeMs = currentTimeMs;
