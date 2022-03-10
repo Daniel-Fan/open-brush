@@ -202,6 +202,7 @@ namespace TiltBrush
 
         public void EnableSpecificTool(BaseTool.ToolType rType)
         {
+            Debug.LogFormat("EnableSpecificTool: " + rType);
             if (ActiveTool.m_Type == rType)
             {
                 return;
@@ -209,8 +210,10 @@ namespace TiltBrush
 
             for (int i = 0; i < m_Tools.Length; ++i)
             {
+                Debug.LogFormat("EnableSpecificTool loop: " + m_Tools[i].m_Type);
                 if (m_Tools[i].m_Type == rType)
                 {
+                    Debug.LogFormat("EnableSpecificTool get to: " + rType);
                     ActiveTool.EnableTool(false);
 
                     m_ActiveToolIndex = i;

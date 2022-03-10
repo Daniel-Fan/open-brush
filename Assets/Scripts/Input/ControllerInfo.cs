@@ -227,6 +227,12 @@ namespace TiltBrush
                     return GetVrInputDown(VrInput.Button04);
                 case SketchCommands.Pause:
                     return GetVrInputDown(VrInput.Button04 /*Button A for Ouculus on right Bursh*/);
+                case SketchCommands.Forward:
+                    return GetVrInputDown(VrInput.Button05 /*Button Y for Ouculus on Left Bursh*/);
+                case SketchCommands.Backward:
+                    return GetVrInputDown(VrInput.Button06 /*Button X for Ouculus on Left Bursh*/);
+                case SketchCommands.SyncBrush:
+                    return GetVrInputDown(VrInput.Button05 /*Button B for Ouculus on right Bursh*/);
             }
             return false;
         }
@@ -252,6 +258,8 @@ namespace TiltBrush
                     return VrInput.Button04 /*full pad*/;
                 case SketchCommands.DuplicateSelection:
                     return VrInput.Button04 /*full pad*/;
+                case SketchCommands.SyncPosition:
+                    return VrInput.Button05 /*Button B for Ouculus on right Bursh*/;
             }
 
             return null;

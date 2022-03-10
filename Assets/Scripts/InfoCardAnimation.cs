@@ -50,7 +50,7 @@ namespace TiltBrush
         private State m_CurrentState;
 
         private float m_StateTimer;
-        private float m_HoldingStateDuration = 10.0f;
+        private float m_HoldingStateDuration = 5.0f;
 
         private Vector3 m_BaseScale;
         private Vector3 m_IntroPopVectorTransformed;

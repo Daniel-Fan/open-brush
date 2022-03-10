@@ -168,6 +168,7 @@ namespace TiltBrush
             public Color color;
         }
         private StoredBrushInfo? m_StoredBrushInfo;
+        private StoredBrushInfo? m_StoredTrensientBrushInfo;
 
         private bool m_StraightEdgeEnabled; // whether the mode is enabled
         // Brushes which return true for NeedsStraightEdgeProxy() use a proxy brush when displaying the
@@ -584,6 +585,39 @@ namespace TiltBrush
             SetAllPointersBrushSize01(info.size01);
             MarkAllBrushSizeUsed();
             PointerColor = info.color;
+        }
+
+        public void StoreTransientBrushInfo(Stroke stroke)
+        {
+            if (m_StoredTrensientBrushInfo != null)
+            {
+                var info = m_StoredTrensientBrushInfo.Value;
+                var curBrush = BrushCatalog.m_Instance.GetBrush(stroke.m_BrushGuid);
+                if (info.brush.DurableName != curBrush.DurableName || info.size01 != m_Instance.MainPointer.GetSizeFromRadius(stroke.m_BrushSize) || info.color != stroke.m_Color)
+                {
+                    OutputWindowScript.m_Instance.CreateInfoCardAtController(
+                            ControllerName.Brush, "Instructor switches brush to " + curBrush.DurableName + "\nPlease press botton B to sync the brush");
+                }
+            }
+            m_StoredTrensientBrushInfo = new StoredBrushInfo
+            {
+                brush = BrushCatalog.m_Instance.GetBrush(stroke.m_BrushGuid),
+                size01 = m_Instance.MainPointer.GetSizeFromRadius(stroke.m_BrushSize),
+                // size01 = stroke.m_BrushSize,
+                color = stroke.m_Color,
+            };
+        }
+
+        public string LoadTransientBrushInfo()
+        {
+            if (m_StoredTrensientBrushInfo == null) { return "Unknown Brush"; }
+            var info = m_StoredTrensientBrushInfo.Value;
+            SetBrushForAllPointers(info.brush);
+            SetAllPointersBrushSize01(info.size01);
+            // SetAllPointersBrushSize01(m_Instance.MainPointer.GetSizeFromRadius(info.size01));
+            MarkAllBrushSizeUsed();
+            PointerColor = info.color;
+            return info.brush.DurableName;
         }
 
         public void RefreshFreePaintPointerAngle()

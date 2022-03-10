@@ -8,6 +8,9 @@ namespace TiltBrush
 
         static public PlayBackObject m_Instance;
 
+        private Vector3 m_Velocity;
+        private Quaternion m_Rotation;
+
         private bool isActive;
         public bool IsActive { get { return isActive; } }
 
@@ -115,6 +118,45 @@ namespace TiltBrush
                 m_VrController.m_Controller.gameObject.transform.SetParent(canvas.transform, false);
                 m_StrokeIndicator.m_Indicator.gameObject.transform.SetParent(canvas.transform, false);
                 Debug.Log("Finish Setting Parent for PlayBack Object");
+            }
+        }
+
+        public void SyncHeadPosition()
+        {
+            Debug.Log("Sync Head position");
+            if (isActive)
+            {
+                var canvas = App.Scene.ActiveCanvas;
+                TrTransform xf_HeadCS = canvas.AsCanvas[ViewpointScript.Head];
+                TrTransform xf_HeadAvat = canvas.AsCanvas[m_Instance.GetAvatar().transform];
+                // m_Velocity = xf_HeadAvat.translation - xf_HeadCS.translation;
+                m_Velocity = m_Instance.GetAvatar().transform.position - ViewpointScript.Head.position;
+                // relative rotation for camera when 
+                // m_Rotation = Quaternion.Inverse(ViewpointScript.Head.rotation) * m_Instance.GetAvatar().transform.rotation;
+                // newScene.rotation = camera.rotation * (old scene rotation relateive to instructor)
+                // m_Rotation = m_Instance.GetAvatar().transform.rotation;
+                ApplyVelocity(m_Velocity, m_Rotation);
+            }
+        }
+
+        void ApplyVelocity(Vector3 velocity, Quaternion rotation)
+        {
+            Debug.Log("ApplyVelocity");
+            TrTransform newScene = App.Scene.Pose;
+            newScene.translation -= velocity;
+            // newScene.rotation = ViewpointScript.Head.rotation * Quaternion.Inverse(rotation);
+            // newScene might have gotten just a little bit invalid.
+            // Enforce the invariant that fly always sends you
+            // to a scene which is MakeValidPose(scene)
+            newScene = SketchControlsScript.MakeValidScenePose(newScene, BoundsRadius);
+            App.Scene.Pose = newScene;
+        }
+
+        float BoundsRadius
+        {
+            get
+            {
+                return SceneSettings.m_Instance.HardBoundsRadiusMeters_SS;
             }
         }
     }

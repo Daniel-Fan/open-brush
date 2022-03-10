@@ -90,6 +90,10 @@ namespace TiltBrush
             Share,
             Fly,
             Pause,
+            Forward,
+            Backward,
+            SyncBrush,
+            SyncPosition,
         }
 
         /// WARNING: do not arbitrarily rename these enum values.
@@ -738,6 +742,8 @@ namespace TiltBrush
                     {
                         return Brush.GetCommandHeld(rCommand);
                     }
+                case SketchCommands.SyncPosition:
+                    return Brush.GetCommandHeld(rCommand);
             }
 
             return false;
@@ -764,6 +770,12 @@ namespace TiltBrush
                 case SketchCommands.Redo:
                     return GetKeyboardShortcutDown(shortcut.Value) || Wand.GetCommandDown(rCommand);
                 case SketchCommands.Pause:
+                    return Brush.GetCommandDown(rCommand);
+                case SketchCommands.Forward:
+                    return Wand.GetCommandDown(rCommand);
+                case SketchCommands.Backward:
+                    return Wand.GetCommandDown(rCommand);
+                case SketchCommands.SyncBrush:
                     return Brush.GetCommandDown(rCommand);
 
                 case SketchCommands.DuplicateSelection:

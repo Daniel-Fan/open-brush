@@ -133,6 +133,13 @@ namespace TiltBrush
             }
         }
 
+        public float GetSizeFromRadius(float size)
+        {
+            float min = _FromRadius(m_BrushSizeRange.x);
+            float max = _FromRadius(m_BrushSizeRange.y);
+            return Mathf.InverseLerp(min, max, _FromRadius(size));
+        }
+
         /// The brush size, using "normalized" values in the range [0,1].
         /// On get, values are raw and may be outside [0,1].
         /// On set, values outside of the range [0,1] are clamped.
@@ -331,7 +338,7 @@ namespace TiltBrush
         float LayerVolume(int iLayer, float fTotalVolume)
         {
             float fResult = 0f;
-            int iNumberOfLayers = m_CurrentBrush.m_BrushAudioLayers.Length;
+            //int iNumberOfLayers = m_CurrentBrush.m_BrushAudioLayers.Length;
 
             float fLayerBeginning;
             if (iLayer == 0)

@@ -1124,12 +1124,15 @@ namespace TiltBrush
                         // Allow extra frames to complete fade to black.
                         // Required for OVR to position the overlay because it only does so once the transition
                         // is complete.
+                        Debug.Log("App is in Quickload state");
                         if (m_QuickloadStallFrames-- < 0)
                         {
                             bool bContinueDrawing = SketchMemoryScript.m_Instance.ContinueDrawingFromMemory();
                             if (!bContinueDrawing)
                             {
+                                Debug.Log("App is in finishLoading");
                                 FinishLoading();
+                                Debug.Log("App is finishedLoading");
                             }
                         }
                         break;
@@ -1339,6 +1342,7 @@ namespace TiltBrush
             {
                 SketchSurfacePanel.m_Instance.EatToolsInput();
             }
+            // SketchSurfacePanel.m_Instance.DisableSpecificTool(BaseTool.ToolType.PlayBackFly);
             SketchSurfacePanel.m_Instance.RequestHideActiveTool(false);
             SketchControlsScript.m_Instance.RestoreFloatingPanels();
             PointerManager.m_Instance.RequestPointerRendering(
@@ -1468,6 +1472,7 @@ namespace TiltBrush
                     m_SketchSurfacePanel.EnableRenderer(true);
                     SketchControlsScript.m_Instance.RequestPanelsVisibility(true);
                     SketchSurfacePanel.m_Instance.RequestHideActiveTool(false);
+                    // SketchSurfacePanel.m_Instance.EnableSpecificTool(BaseTool.ToolType.PlayBackFly);
                     SketchControlsScript.m_Instance.RestoreFloatingPanels();
                     break;
                 case AppState.QuickLoad:
@@ -2176,21 +2181,22 @@ namespace TiltBrush
         void OnPlaybackComplete()
         {
             SaveLoadScript.m_Instance.SignalPlaybackCompletion();
-            if (SketchControlsScript.m_Instance.SketchPlaybackMode !=
-                SketchMemoryScript.PlaybackMode.Timestamps)
-            {
+            //if (SketchControlsScript.m_Instance.SketchPlaybackMode !=
+            //    SketchMemoryScript.PlaybackMode.Timestamps)
+            //{
 
-                // For non-timestamp playback mode, adjust current time to last stroke in drawing.
-                try
-                {
-                    this.CurrentSketchTime = SketchMemoryScript.m_Instance.GetApproximateLatestTimestamp();
-                }
-                catch (InvalidOperationException)
-                {
-                    // Can happen as an edge case, eg if we try to load a file that doesn't exist.
-                    this.CurrentSketchTime = 0;
-                }
+            // For non-timestamp playback mode, adjust current time to last stroke in drawing.
+            try
+            {
+                this.CurrentSketchTime = SketchMemoryScript.m_Instance.GetApproximateLatestTimestamp();
+                Debug.LogFormat("CurrentSketchTime on PlayBack Complete " + this.CurrentSketchTime);
             }
+            catch (InvalidOperationException)
+            {
+                // Can happen as an edge case, eg if we try to load a file that doesn't exist.
+                this.CurrentSketchTime = 0;
+            }
+            //}
         }
 
         public TiltBrushManifest GetMergedManifest(bool consultUserConfig)
