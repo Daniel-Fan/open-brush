@@ -194,6 +194,13 @@ namespace TiltBrush
                 writer.Int32(brushIndex);
                 writer.Color(stroke.m_Color);
                 writer.Float(stroke.m_BrushSize);
+                if (stroke.m_isVisibleForPlayBack)
+                {
+                    writer.Int32(1);
+                } else
+                {
+                    writer.Int32(0);
+                }
                 // Bump SKETCH_VERSION to >= 6 and remove this comment if any
                 // length-prefixed stroke extensions are added
                 StrokeExtension strokeExtensionMask = StrokeExtension.Flags | StrokeExtension.Seed;
@@ -355,6 +362,14 @@ namespace TiltBrush
                     brushList[brushIndex] : Guid.Empty;
                 stroke.m_Color = reader.Color();
                 stroke.m_BrushSize = reader.Float();
+                var isVisible = reader.Int32();
+                if (isVisible == 0)
+                {
+                    stroke.m_isVisibleForPlayBack = false;
+                } else
+                {
+                    stroke.m_isVisibleForPlayBack = true;
+                }
                 stroke.m_BrushScale = 1f;
                 stroke.m_Seed = 0;
 

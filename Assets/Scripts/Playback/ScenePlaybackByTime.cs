@@ -139,24 +139,6 @@ namespace TiltBrush
                 var durableName = PointerManager.m_Instance.LoadTransientBrushInfo();
                 OutputWindowScript.m_Instance.CreateInfoCardAtController(
                             InputManager.ControllerName.Brush, "Sync up the current brush: " + durableName);
-                //OutputWindowScript.m_Instance.AddNewLine(
-                //            OutputWindowScript.LineType.Special, "Sync up the current brush");
-            }
-            if (InputManager.m_Instance.GetCommandDown(InputManager.SketchCommands.Forward) && !IsPaused)
-            {
-                TotalAdjustedTimeMs += 5000.0;
-                OutputWindowScript.m_Instance.CreateInfoCardAtController(
-                        InputManager.ControllerName.Brush, "Forward 5s");
-                //OutputWindowScript.m_Instance.AddNewLine(
-                //            OutputWindowScript.LineType.Special, "Forward 5s");
-            }
-            if (InputManager.m_Instance.GetCommandDown(InputManager.SketchCommands.Backward) && !IsPaused)
-            {
-                TotalAdjustedTimeMs -= 5000.0;
-                OutputWindowScript.m_Instance.CreateInfoCardAtController(
-                        InputManager.ControllerName.Brush, "Backward 5s");
-                //OutputWindowScript.m_Instance.AddNewLine(
-                //            OutputWindowScript.LineType.Special, "Backward 5s");
             }
             if (InputManager.m_Instance.GetCommandDown(InputManager.SketchCommands.Pause))
             {
@@ -180,8 +162,37 @@ namespace TiltBrush
             }
 
             double TotalCurrentPauedTimeMs = TotalPausedTimeMs + CurrentPausedTimeMs - TotalAdjustedTimeMs;
+            double currentTimeMsWithoutEdit;
+            double adjustedTimeMs = 0.0;
+            currentTimeMsWithoutEdit = (App.Instance.CurrentSketchTime * 1000) - TotalCurrentPauedTimeMs;
+
+            if (InputManager.m_Instance.GetCommandDown(InputManager.SketchCommands.Forward) && !IsPaused)
+            {
+                if (m_nextStrokeHeadTimeMs != 0)
+                {
+                    adjustedTimeMs = m_nextStrokeHeadTimeMs - currentTimeMsWithoutEdit;
+                    TotalAdjustedTimeMs += adjustedTimeMs;
+                    OutputWindowScript.m_Instance.CreateInfoCardAtController(
+                            InputManager.ControllerName.Brush, "Forward to next stroke");
+                }
+                
+            }
+            if (InputManager.m_Instance.GetCommandDown(InputManager.SketchCommands.Backward) && !IsPaused)
+            {
+
+                if (m_renderedStrokes.Count > 0 )
+                {
+                    double offset = 10;
+                    var previousStroke = GetNextVisibleStroke(m_renderedStrokes);
+                    adjustedTimeMs = previousStroke.HeadTimestampMs - currentTimeMsWithoutEdit - offset;
+                    TotalAdjustedTimeMs += adjustedTimeMs;
+                    OutputWindowScript.m_Instance.CreateInfoCardAtController(
+                        InputManager.ControllerName.Brush, "Backward to previous stroke");
+                }
+            }
+
             int currentTimeMs;
-            currentTimeMs = (int)((App.Instance.CurrentSketchTime * 1000) - TotalCurrentPauedTimeMs);
+            currentTimeMs = (int)(currentTimeMsWithoutEdit + adjustedTimeMs);
             if (currentTimeMs < 0)
             {
                 currentTimeMs = 0;
@@ -223,6 +234,7 @@ namespace TiltBrush
             }
 
             int pendingStrokes = 0;
+            int pendingVisibleStrokes = 0;
             if (currentTimeMs != 0)
             {
                 Debug.Log("PlayBack by Time Update() before for loop.");
@@ -239,10 +251,6 @@ namespace TiltBrush
                         m_renderedStrokes.Insert(stroke.StrokeNode);
                         stroke.ClearPlayback();
                     }
-                    if (m_unrenderedStrokes.Count > 0)
-                    {
-                        Debug.Log("unrenderStroke HeadTimestampMs " + m_unrenderedStrokes.First.Value.HeadTimestampMs);
-                    }
                     // grab and play available strokes, until one is left pending
                     while (stroke.IsDone() && m_unrenderedStrokes.Count > 0 &&
                         (m_unrenderedStrokes.First.Value.HeadTimestampMs <= currentTimeMs ||
@@ -250,32 +258,37 @@ namespace TiltBrush
                     {
                         var node = m_unrenderedStrokes.PopFirst();
                         // what if the next stroke is not visible
-                        if (m_unrenderedStrokes.Count > 0)
+                        /*if (m_unrenderedStrokes.Count > 0 && m_unrenderedStrokes.First.Value.IsDrawForPlayback && node.Value.IsDrawForPlayback)*/
+                        if (m_unrenderedStrokes.Count > 0 && node.Value.IsDrawForPlayback)
                         {
                             Debug.Log("Start to record next Stroke info");
-                            m_nextStrokeHeadTimeMs = m_unrenderedStrokes.First.Value.HeadTimestampMs;
+                            var nextStroke = GetNextVisibleStroke(m_unrenderedStrokes);
+                            if (nextStroke != null)
+                            {
+                                m_nextStrokeHeadTimeMs = nextStroke.HeadTimestampMs;
 
-                            m_nextHeadPosition = m_unrenderedStrokes.First.Value.FirstHeadPosition;
-                            m_nextHeadOrient = m_unrenderedStrokes.First.Value.FirstHeadOrient;
+                                m_nextHeadPosition = nextStroke.FirstHeadPosition;
+                                m_nextHeadOrient = nextStroke.FirstHeadOrient;
 
-                            m_nextControllerPosition = m_unrenderedStrokes.First.Value.FirstControllerPosition;
-                            m_nextControllerOrient = m_unrenderedStrokes.First.Value.FirstControllerOrient;
+                                m_nextControllerPosition = nextStroke.FirstControllerPosition;
+                                m_nextControllerOrient = nextStroke.FirstControllerOrient;
 
-                            m_nextIndicatorPosition = m_unrenderedStrokes.First.Value.FirstIndicatorPosition;
-                            m_nextIndicatorOrient = m_unrenderedStrokes.First.Value.FirstIndicatorOrient;
+                                m_nextIndicatorPosition = nextStroke.FirstIndicatorPosition;
+                                m_nextIndicatorOrient = nextStroke.FirstIndicatorOrient;
 
-                            Debug.Log("Finish to record next Stroke info");
-                            m_lastStrokeTailTimeMs = node.Value.TailTimestampMs;
+                                Debug.Log("Finish to record next Stroke info");
+                                m_lastStrokeTailTimeMs = node.Value.TailTimestampMs;
 
-                            m_lastHeadPosition = node.Value.LastHeadPosition;
-                            m_lastHeadOrient = node.Value.LastHeadOrient;
+                                m_lastHeadPosition = node.Value.LastHeadPosition;
+                                m_lastHeadOrient = node.Value.LastHeadOrient;
 
-                            m_lastControllerPosition = node.Value.LastControllerPosition;
-                            m_lastControllerOrient = node.Value.LastControllerOrient;
+                                m_lastControllerPosition = node.Value.LastControllerPosition;
+                                m_lastControllerOrient = node.Value.LastControllerOrient;
 
-                            m_lastIndicatorPosition = node.Value.LastIndicatorPosition;
-                            m_lastIndicatorOrient = node.Value.LastIndicatorOrient;
-                            Debug.Log("Finish to record last Stroke info");
+                                m_lastIndicatorPosition = node.Value.LastIndicatorPosition;
+                                m_lastIndicatorOrient = node.Value.LastIndicatorOrient;
+                                Debug.Log("Finish to record last Stroke info");
+                            }
                         }
                         // m_popedStrokeCount++;
                         Debug.Log("Before checking the visibility of stroke: " + node.Value.IsVisibleForPlayback);
@@ -287,7 +300,10 @@ namespace TiltBrush
                             Debug.Log("Check the total length: " + m_strokePlaybacks.Length);
                             stroke.Init(node, PointerManager.m_Instance.GetTransientPointer(i), m_targetCanvas, PlayBackObject.m_Instance.GetIndicator(), PlayBackObject.m_Instance.GetAvatar(), PlayBackObject.m_Instance.GetController());
                             // Load the current playback storke into the transient brush
-                            PointerManager.m_Instance.StoreTransientBrushInfo(node.Value);
+                            if (node.Value.IsDrawForPlayback)
+                            {
+                                PointerManager.m_Instance.StoreTransientBrushInfo(node.Value);
+                            }
                             Debug.Log("update the strokes after it has been init");
                             stroke.Update(TotalCurrentPauedTimeMs);
                             if (stroke.IsDone())
@@ -307,10 +323,14 @@ namespace TiltBrush
                     if (!stroke.IsDone())
                     {
                         ++pendingStrokes;
+                        if (stroke.IsVisible())
+                        {
+                            ++pendingVisibleStrokes;
+                        }
                     }
                 }
                 
-                if (pendingStrokes == 0)
+                if (pendingVisibleStrokes == 0)
                 {
                     // consider m_unrenderedStrokes.First.Value.IsVisibleForPlayback
                     // m_prepopedStrokeCount++;
@@ -394,6 +414,19 @@ namespace TiltBrush
         }
 
         public void QuickLoadRemaining() { App.Instance.CurrentSketchTime = float.MaxValue;}
+
+        public Stroke GetNextVisibleStroke(SortedLinkedList<Stroke> strokeList)
+        {
+            var enumerator = strokeList.GetEnumerator();
+            while(enumerator.MoveNext())
+            {
+                if (enumerator.Current.IsDrawForPlayback)
+                {
+                    return enumerator.Current;
+                }
+            }
+            return null;
+        }
     }
 
 } // namespace TiltBrush

@@ -159,6 +159,7 @@ namespace TiltBrush
         /// floating-panel mode doesn't actually _use_ the Wand's pointer, etc.
         private PointerData[] m_Pointers;
         private bool m_InPlaybackMode;
+        private bool m_InPlaybackModeForStroke;
 
         private PointerData m_MainPointerData;
         struct StoredBrushInfo
@@ -363,6 +364,16 @@ namespace TiltBrush
         public void SetInPlaybackMode(bool bInPlaybackMode)
         {
             m_InPlaybackMode = bInPlaybackMode;
+        }
+
+        public void SetInPlaybackForStroke(bool bInPlaybackMode)
+        {
+            m_InPlaybackModeForStroke = bInPlaybackMode;
+        }
+
+        public bool IsPlaybackMode()
+        {
+            return m_InPlaybackModeForStroke;
         }
 
         public void EatLineEnabledInput()
@@ -596,7 +607,7 @@ namespace TiltBrush
                 if (info.brush.DurableName != curBrush.DurableName || info.size01 != m_Instance.MainPointer.GetSizeFromRadius(stroke.m_BrushSize) || info.color != stroke.m_Color)
                 {
                     OutputWindowScript.m_Instance.CreateInfoCardAtController(
-                            ControllerName.Brush, "Instructor switches brush to " + curBrush.DurableName + "\nPlease press botton B to sync the brush");
+                            ControllerName.Brush, "Instructor switches brush to " + curBrush.DurableName + "\nPlease press Botton B to sync the brush");
                 }
             }
             m_StoredTrensientBrushInfo = new StoredBrushInfo

@@ -35,6 +35,8 @@ namespace TiltBrush
 
         public LinkedListNode<T> First { get { return m_list.First; } }
 
+        public LinkedListNode<T> Last { get { return m_list.Last; } }
+
         public LinkedListNode<T> PopFirst()
         {
             var node = m_list.First;

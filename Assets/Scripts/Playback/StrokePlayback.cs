@@ -30,6 +30,7 @@ namespace TiltBrush
         private PointerScript m_pointer;
         private int m_nextControlPoint;
         private bool m_isDone = true;
+        private bool m_isVisible;
 
         // Using "Init" here so usage can avoid per-stroke heap activity.
         public void BaseInit(Stroke stroke,
@@ -52,6 +53,7 @@ namespace TiltBrush
             m_vrcontroller = controller;
             m_nextControlPoint = 0;
             m_isDone = false;
+            m_isVisible = stroke.IsDrawForPlayback;
 
             // We make the BeginLine call, even though the stroke time may be in the future.
             // Harmless with current brushes since no geometry is generated until UpdateLinePosition.
@@ -88,6 +90,19 @@ namespace TiltBrush
         public bool IsDone()
         {
             return m_isDone;
+        }
+
+        public bool IsVisible()
+        {
+            return m_isVisible;
+        }
+
+        public uint GetHeadTime
+        {
+            get
+            {
+                return m_stroke.m_ControlPoints[0].m_TimestampMs;
+            }
         }
 
         protected abstract bool IsControlPointReady(PointerManager.ControlPoint controlPoint, double TotalCurrentPauedTimeMs);
@@ -159,18 +174,21 @@ namespace TiltBrush
             if (needPointerUpdate)
             {
                 // This is only really done for visual reasons
-                var xf_GS_indicator = Coords.CanvasPose * TrTransform.TR(lastCp.m_Pos, lastCp.m_Orient);
-                xf_GS_indicator.scale = rStrokeIndicator.transform.GetUniformScale();
-                Coords.AsGlobal[rStrokeIndicator.transform] = xf_GS_indicator;
+                if (m_stroke.IsDrawForPlayback)
+                {
+                    var xf_GS_indicator = Coords.CanvasPose * TrTransform.TR(lastCp.m_Pos, lastCp.m_Orient);
+                    xf_GS_indicator.scale = rStrokeIndicator.transform.GetUniformScale();
+                    Coords.AsGlobal[rStrokeIndicator.transform] = xf_GS_indicator;
 
 
-                var xf_GS_avatar = Coords.CanvasPose * TrTransform.TR(lastCphead.m_HeadPos, lastCphead.m_HeadOrient);
-                xf_GS_avatar.scale = rOculusAvatar.transform.GetUniformScale();
-                Coords.AsGlobal[rOculusAvatar.transform] = xf_GS_avatar;
+                    var xf_GS_avatar = Coords.CanvasPose * TrTransform.TR(lastCphead.m_HeadPos, lastCphead.m_HeadOrient);
+                    xf_GS_avatar.scale = rOculusAvatar.transform.GetUniformScale();
+                    Coords.AsGlobal[rOculusAvatar.transform] = xf_GS_avatar;
 
-                var xf_GS_controller = Coords.CanvasPose * TrTransform.TR(lastCp.m_ControllerPos, lastCp.m_ControllerOrient);
-                xf_GS_controller.scale = rVrController.transform.GetUniformScale();
-                Coords.AsGlobal[rVrController.transform] = xf_GS_controller;
+                    var xf_GS_controller = Coords.CanvasPose * TrTransform.TR(lastCp.m_ControllerPos, lastCp.m_ControllerOrient);
+                    xf_GS_controller.scale = rVrController.transform.GetUniformScale();
+                    Coords.AsGlobal[rVrController.transform] = xf_GS_controller;
+                }
 
                 // This is only really done for visual reasons
                 var xf_GS = Coords.CanvasPose * TrTransform.TR(lastCp.m_Pos, lastCp.m_Orient);

@@ -34,6 +34,7 @@ namespace TiltBrush
         // Not currently serialized.
         public int m_Seed;
         public SketchGroupTag m_Group = SketchGroupTag.None;
+        public bool m_isVisibleForPlayBack;
 
         /// This creates a copy of the given stroke.
         public StrokeData(StrokeData existing = null)
@@ -48,6 +49,7 @@ namespace TiltBrush
                 this.m_Seed = existing.m_Seed;
                 this.m_Group = existing.m_Group;
                 this.m_ControlPoints = new PointerManager.ControlPoint[existing.m_ControlPoints.Length];
+                this.m_isVisibleForPlayBack = existing.m_isVisibleForPlayBack;
                 Array.Copy(existing.m_ControlPoints, this.m_ControlPoints, this.m_ControlPoints.Length);
             }
         }

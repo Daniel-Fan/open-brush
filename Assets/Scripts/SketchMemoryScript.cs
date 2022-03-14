@@ -475,6 +475,7 @@ namespace TiltBrush
             rNewStroke.m_BrushScale = brushScale;
             rNewStroke.m_Flags = strokeFlags;
             rNewStroke.m_Seed = seed;
+            rNewStroke.m_isVisibleForPlayBack = !PointerManager.m_Instance.IsPlaybackMode();
             subset.m_Stroke = rNewStroke;
 
             SketchMemoryScript.m_Instance.RecordCommand(
@@ -509,6 +510,7 @@ namespace TiltBrush
             rNewStroke.m_BrushSize = fBrushSize;
             rNewStroke.m_BrushScale = brushScale;
             rNewStroke.m_Flags = strokeFlags;
+            rNewStroke.m_isVisibleForPlayBack = !PointerManager.m_Instance.IsPlaybackMode();
             brushScript.Stroke = rNewStroke;
 
             SketchMemoryScript.m_Instance.RecordCommand(
@@ -869,6 +871,7 @@ namespace TiltBrush
                 }
                 m_IsInitialPlay = true;
             }
+            PointerManager.m_Instance.SetInPlaybackForStroke(true);
 
             if (!forEdit)
             {
@@ -892,6 +895,7 @@ namespace TiltBrush
                     }
                     // we're done-- however in timeline edit mode we keep playback alive to allow scrubbing
                     PointerManager.m_Instance.SetInPlaybackMode(false);
+                    PointerManager.m_Instance.SetInPlaybackForStroke(false);
                     PointerManager.m_Instance.RequestPointerRendering(true);
                     m_ScenePlayback = null;
                     Debug.Log("Starting Clear PlayBack Object in Continue Drawing");
@@ -1037,8 +1041,9 @@ namespace TiltBrush
                 m_BrushScale = oldStroke.m_BrushScale,
                 m_BrushSize = oldStroke.m_BrushSize,
                 m_Color = oldStroke.m_Color,
-                m_Seed = oldStroke.m_Seed
-            };
+                m_Seed = oldStroke.m_Seed,
+                m_isVisibleForPlayBack = !PointerManager.m_Instance.IsPlaybackMode()
+        };
             Array.Copy(oldStroke.m_ControlPointsToDrop, newStroke.m_ControlPointsToDrop,
                 oldStroke.m_ControlPointsToDrop.Length);
 
@@ -1088,6 +1093,7 @@ namespace TiltBrush
             newStroke.m_BrushSize = oldStroke.m_BrushSize;
             newStroke.m_Color = oldStroke.m_Color;
             newStroke.m_Seed = oldStroke.m_Seed;
+            newStroke.m_isVisibleForPlayBack = oldStroke.IsVisibleForPlayback;
 
             // Now swap r and b
             newStroke.m_Color.r = oldStroke.m_Color.b;

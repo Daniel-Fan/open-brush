@@ -112,6 +112,11 @@ namespace TiltBrush
         /// TODO: the setter is never used -- is that a bug, or should we remove the field?
         public bool IsVisibleForPlayback { get; /*set;*/ } = true;
 
+        public bool IsDrawForPlayback 
+        {
+               get { return this.m_isVisibleForPlayBack; }
+        }
+
         public uint HeadTimestampMs
         {
             get { return this.m_ControlPoints[0].m_TimestampMs; }
