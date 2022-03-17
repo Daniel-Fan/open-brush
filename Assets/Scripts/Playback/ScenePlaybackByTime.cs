@@ -103,6 +103,9 @@ namespace TiltBrush
         public double LastPausedTimeMs = 0.0;
         public double CurrentPausedTimeMs = 0.0;
         public bool IsPaused = false;
+        public double forwardMsgCountDown = 0.0;
+        public double backwardMsgCountDown = 0.0;
+        public double syncBrushMsgCountDown = 0.0;
 
         // Input strokes must be ordered by head timestamp
         public ScenePlaybackByTimeLayered(IEnumerable<Stroke> strokes)
@@ -126,6 +129,9 @@ namespace TiltBrush
         public bool Update()
         {
             Debug.Log("ScenePlayBackByTime in Update.");
+            forwardMsgCountDown -= Time.deltaTime;
+            backwardMsgCountDown -= Time.deltaTime;
+            syncBrushMsgCountDown -= Time.deltaTime;
             var isSyncPosition = false;
             if (InputManager.m_Instance.GetCommandHeld(InputManager.SketchCommands.SyncPosition))
             {
@@ -136,9 +142,15 @@ namespace TiltBrush
             }
             if (InputManager.m_Instance.GetCommandDown(InputManager.SketchCommands.SyncBrush) && !isSyncPosition)
             {
-                var durableName = PointerManager.m_Instance.LoadTransientBrushInfo();
-                OutputWindowScript.m_Instance.CreateInfoCardAtController(
-                            InputManager.ControllerName.Brush, "Sync up the current brush: " + durableName);
+                    var durableName = PointerManager.m_Instance.LoadTransientBrushInfo();
+                    
+                    if (syncBrushMsgCountDown < 0)
+                    {
+                        syncBrushMsgCountDown = 5.0;
+                        OutputWindowScript.m_Instance.CreateInfoCardAtController(
+                                    InputManager.ControllerName.Brush, "Sync up the current brush: " + durableName);
+                    }
+                
             }
             if (InputManager.m_Instance.GetCommandDown(InputManager.SketchCommands.Pause))
             {
@@ -152,6 +164,8 @@ namespace TiltBrush
                 {
                     IsPaused = true;
                     LastPausedTimeMs = App.Instance.CurrentSketchTime * 1000;
+                    OutputWindowScript.m_Instance.CreateInfoCardAtController(
+                                InputManager.ControllerName.Brush, "PlayBack is paused");
                 }
             }
             Debug.LogFormat("Pause is {0}", IsPaused);
@@ -172,10 +186,14 @@ namespace TiltBrush
                 {
                     adjustedTimeMs = m_nextStrokeHeadTimeMs - currentTimeMsWithoutEdit;
                     TotalAdjustedTimeMs += adjustedTimeMs;
-                    OutputWindowScript.m_Instance.CreateInfoCardAtController(
-                            InputManager.ControllerName.Brush, "Forward to next stroke");
+                    if (forwardMsgCountDown < 0)
+                    {
+                        forwardMsgCountDown = 5.0;
+                        OutputWindowScript.m_Instance.CreateInfoCardAtController(
+                                InputManager.ControllerName.Brush, "Forward to next stroke");
+                    }
+                    
                 }
-                
             }
             if (InputManager.m_Instance.GetCommandDown(InputManager.SketchCommands.Backward) && !IsPaused)
             {
@@ -186,8 +204,12 @@ namespace TiltBrush
                     var previousStroke = GetNextVisibleStroke(m_renderedStrokes);
                     adjustedTimeMs = previousStroke.HeadTimestampMs - currentTimeMsWithoutEdit - offset;
                     TotalAdjustedTimeMs += adjustedTimeMs;
-                    OutputWindowScript.m_Instance.CreateInfoCardAtController(
-                        InputManager.ControllerName.Brush, "Backward to previous stroke");
+                    if (backwardMsgCountDown < 0)
+                    {
+                        backwardMsgCountDown = 5.0;
+                        OutputWindowScript.m_Instance.CreateInfoCardAtController(
+                            InputManager.ControllerName.Brush, "Backward to previous stroke");
+                    }
                 }
             }
 
