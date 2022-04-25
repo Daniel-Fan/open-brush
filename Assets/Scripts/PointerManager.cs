@@ -604,7 +604,8 @@ namespace TiltBrush
             {
                 var info = m_StoredTrensientBrushInfo.Value;
                 var curBrush = BrushCatalog.m_Instance.GetBrush(stroke.m_BrushGuid);
-                if (info.brush.DurableName != curBrush.DurableName || info.size01 != m_Instance.MainPointer.GetSizeFromRadius(stroke.m_BrushSize) || info.color != stroke.m_Color)
+                //if (info.brush.DurableName != curBrush.DurableName || info.size01 != m_Instance.MainPointer.GetSizeFromRadius(stroke.m_BrushSize) || info.color != stroke.m_Color)
+                if (info.brush.DurableName != curBrush.DurableName || info.color != stroke.m_Color)
                 {
                     OutputWindowScript.m_Instance.CreateInfoCardAtController(
                             ControllerName.Brush, "Instructor switches brush to " + curBrush.DurableName + "\nPlease press Botton B to sync the brush");
